@@ -53,6 +53,11 @@ def top_units():
             ret[col] = M_test[return_idxs,feature_name_back_idx[col]].tolist()
     return jsonify(data=ret)
 
+@app.route('/distribution', methods=['GET'])
+def distribution():
+    col = request.args['col']
+    return jsonify(data=list(M_test[::2,feature_name_back_idx[col]]))
+
 if __name__ == '__main__':
     app.run(debug=True)
 
