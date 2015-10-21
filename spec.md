@@ -16,7 +16,7 @@ Getting top features
 Getting data
 ============
 * HTTP method: GET
-* resource /top_units
+* resource: /top_units
 * arguments:
     * n: Number of units (rows) to return (default 10)
     * cols: List of columns to return. 
@@ -48,3 +48,20 @@ Getting data
     serves:
     
     {"data":{"row_num":[5,3],"most_important_feature":[1.2,1.5],"pred_proba":[0.97,0.96]}} 
+
+Getting Distributions
+=====================
+* HTTP method: GET
+* resource: /distribution
+* arguments:
+    * col: Name of column for which we are getting the distribution (required)
+* returns: JSON list of numbers representing the distribution of values in the column.
+  This could be, for example, the entire column, or every other value in the column, or
+  a random sample of values in the column.
+* example:
+
+    /distribution?col=most_important_feature
+    
+    serves
+    
+    {"data":[1.2,1.2,1.5,0.0,2.0,1.3,2,7.9]}
