@@ -1,5 +1,8 @@
 extends layout
 
+block scripts
+    script(src='/javascripts/jquery-2.1.4.js')
+    script(src='/javascripts/hylas-table.js')
+
 block content
-    h1= title
-    p Welcome to #{title}
+    div(id='table') table goes here.
