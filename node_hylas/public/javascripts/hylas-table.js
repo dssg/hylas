@@ -1,4 +1,15 @@
 //http://stackoverflow.com/questions/8749236/create-table-with-jquery-append
+var cellCallBack = function(row, col) {
+    var text = row.toString() + ', ' + col.toString();
+    $('#cell_graph').text(text);
+}
+var makeCellCallBack = function(row, col) {
+    return function() {
+        cellCallBack(row, col)
+    };
+}
+
+
 $(document).ready(function() {
     $.getJSON('/data/top_features', function(jd) {
         var topFeatures = jd.data;
@@ -19,11 +30,12 @@ $(document).ready(function() {
                 topFeatures.forEach(function(colName) {
                     var td = columns[colName][i];
                     var cell = $('<td></td>').text(td.toString().slice(0, 4));
+                    cell.click(makeCellCallBack(i, colName));
                     row.append(cell);
                 });
                 table.append(row)
             }
-            $('#hylas_table').append(table);
+            $('#hylas_table').replaceWith(table);
         });
     });
 
