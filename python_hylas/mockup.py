@@ -5,6 +5,7 @@ from flask import jsonify
 from flask import request
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from features import get_top_features, fetch_data, parse_and_order
 
 N_ROWS = 100
 N_COLS = 10
@@ -33,6 +34,29 @@ app = Flask(__name__)
 @app.route('/top_features', methods=['GET'])
 def top_features():
     n = int(request.args.get('n', '10'))
+
+    unit_col = 'student_id'
+    time_col = 'grade_level'
+    label_col = 'label'
+    district = 'vps'
+
+    data, X_categories = fetch_data(district=district,
+                                    from_pickle=False,
+                                    unit_col=unit_col,
+                                    time_col=time_col
+                                    )
+    if district == 'wcpss':
+        data = data.drop(['age_first_entered_wcpss'], 1)
+        data = data.drop(['age_entered_into_us'], 1)
+
+    x_cols = data.columns[(data.columns != label_col) & (data.columns != unit_col) & (data.columns != time_col)]
+    y_col = label_col
+
+    top_feature_str = get_top_features(n, data, time_col, x_cols, y_col, district,
+           X_categories=X_categories)
+
+    top_feature_cols = parse_and_order(top_feature_str)
+
     return jsonify(data=top_feature_cols[:n])    
 
 @app.route('/top_units', methods=['GET'])
