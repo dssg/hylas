@@ -13,6 +13,8 @@ var makeCellCallBack = function(row, col) {
 $(document).ready(function() {
     $.getJSON('/data/top_features', function(jd) {
         var topFeatures = jd.data;
+        topFeatures.push('row_num');
+        topFeatures.push('pred_proba');
         var table = $('<table></table>');
         var row = $('<tr></tr>');
         topFeatures.forEach(function(th) {
@@ -30,7 +32,8 @@ $(document).ready(function() {
                 topFeatures.forEach(function(colName) {
                     var td = columns[colName][i];
                     var cell = $('<td></td>').text(td.toString().slice(0, 4));
-                    cell.click(makeCellCallBack(i, colName));
+                    cell.click(makeCellCallBack(columns['row_num'][i], 
+                                                colName));
                     row.append(cell);
                 });
                 table.append(row)
