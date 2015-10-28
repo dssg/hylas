@@ -1,11 +1,16 @@
 //http://stackoverflow.com/questions/8749236/create-table-with-jquery-append
-var cellCallBack = function(row, col) {
-    var text = row.toString() + ', ' + col.toString();
-    $('#cell_graph').text(text);
+var cellCallBack = function(row, col, val) {
+    $.getJSON('/data/distribution?col=' + col, function(jd) {
+        var distribution=jd.data;
+        plotHistogram($("#histogram"), distribution, 10, val);
+    });
+    //var text = row.toString() + ', ' + col.toString();
+    //$('#cell_graph').text(text);
 }
-var makeCellCallBack = function(row, col) {
+
+var makeCellCallBack = function(row, col, val) {
     return function() {
-        cellCallBack(row, col)
+        cellCallBack(row, col, val)
     };
 }
 
@@ -33,7 +38,8 @@ $(document).ready(function() {
                     var td = columns[colName][i];
                     var cell = $('<td></td>').text(td.toString().slice(0, 4));
                     cell.click(makeCellCallBack(columns['row_num'][i], 
-                                                colName));
+                                                colName,
+                                                td));
                     row.append(cell);
                 });
                 table.append(row)

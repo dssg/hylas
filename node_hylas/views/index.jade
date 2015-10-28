@@ -2,8 +2,10 @@ extends layout
 
 block scripts
     script(src='/javascripts/jquery-2.1.4.js')
+    script(src='/javascripts/jquery.flot.js')
     script(src='/javascripts/hylas-table.js')
+    script(src='/javascripts/hylas-histogram.js')
 
 block content
     div(id='hylas_table') table goes here.
-    div(id='cell_graph') graph goes here.
+    div(id='histogram') 
