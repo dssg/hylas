@@ -4,14 +4,14 @@ var makeBins = function(data, nBins, specialPoint) {
     var range = max - min;
     // http://stackoverflow.com/questions/1295584/most-efficient-way-to-create-a-zero-filled-javascript-array
     var bins = Array.apply(null, Array(nBins)).map(Number.prototype.valueOf,0);
-    console.log(bins);
     data.forEach(function(x) {
         var bin = Math.min(Math.round(((x - min) / range) * nBins), nBins -1);
         bins[bin]++;
     });
+    var barWidth = range / nBins;
     var result = [];
     for (var i = 0; i < nBins; i++) {
-        result.push([(i / nBins) * range + min, bins[i]]);
+        result.push([(i / nBins) * range + min - (barWidth / 2), bins[i]]);
     }
     var specialBin = Math.min(
         Math.round(((specialPoint - min) / range) * nBins), 
@@ -19,7 +19,7 @@ var makeBins = function(data, nBins, specialPoint) {
     var specialHeight = bins[specialBin];
     return {
         data: result, 
-        barWidth: range / nBins, 
+        barWidth: barWidth,
         specialPoint: [specialPoint, specialHeight]
     };
 }

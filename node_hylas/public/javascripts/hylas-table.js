@@ -4,8 +4,6 @@ var cellCallBack = function(row, col, val) {
         var distribution=jd.data;
         plotHistogram($("#histogram"), distribution, 10, val);
     });
-    //var text = row.toString() + ', ' + col.toString();
-    //$('#cell_graph').text(text);
 }
 
 var makeCellCallBack = function(row, col, val) {
@@ -27,7 +25,6 @@ $(document).ready(function() {
             row.append(cell);
         });
         table.append(row);
-        console.log('?cols=' + topFeatures.toString());
         $.getJSON('/data/top_units?n=10&cols=' + topFeatures.toString(), 
             function(jd) {
             var columns = jd.data;
