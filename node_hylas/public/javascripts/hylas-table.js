@@ -2,7 +2,10 @@
 var cellCallBack = function(row, col, val) {
     $.getJSON('/data/distribution?col=' + col, function(jd) {
         var distribution=jd.data;
-        plotHistogram($("#histogram"), distribution, 10, val);
+        plotHistogram($('#histogram'), distribution, 10, val);
+        $('td').css('background-color', 'white');
+        $('.row_' + row).css('background-color', 'red'); 
+        $('.col_' + col).css('background-color', 'yellow'); 
     });
 }
 
@@ -30,13 +33,17 @@ $(document).ready(function() {
             var columns = jd.data;
             var nRows = columns[Object.keys(columns)[0]].length;
             for (var i = 0; i < nRows; i++) {
+                var row_num = columns['row_num'][i];
                 var row = $('<tr></tr>');
                 topFeatures.forEach(function(colName) {
                     var td = columns[colName][i];
-                    var cell = $('<td></td>').text(td.toString().slice(0, 4));
-                    cell.click(makeCellCallBack(columns['row_num'][i], 
+                    var cell = $('<td></td>')
+                        .text(td.toString().slice(0, 4))
+                        .click(makeCellCallBack(row_num, 
                                                 colName,
-                                                td));
+                                                td))
+                        .addClass('col_' + colName)
+                        .addClass('row_' + row_num);
                     row.append(cell);
                 });
                 table.append(row)
