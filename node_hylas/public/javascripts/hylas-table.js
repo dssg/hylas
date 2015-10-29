@@ -6,6 +6,7 @@ var cellCallBack = function(row, col, val) {
         $('td').css('background-color', 'white');
         $('.row_' + row).css('background-color', 'red'); 
         $('.col_' + col).css('background-color', 'yellow'); 
+        $('#histogram_title').text('Distribution of feature ' + col);
     });
 }
 
