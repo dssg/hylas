@@ -38,7 +38,13 @@ var plotHistogram = function(dom_element, data, nBins, special_point) {
         },
         {
             data: [result.specialPoint],
-            points: { show: true }
+            color: 'red',
+            points: 
+            { 
+                show: true, 
+                fillColor: 'red' ,
+                color: 'red'
+            }
         }
     ]);
 };
