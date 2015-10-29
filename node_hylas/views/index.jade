@@ -1,5 +1,11 @@
 extends layout
 
+block scripts
+    script(src='/javascripts/jquery-2.1.4.js')
+    script(src='/javascripts/jquery.flot.js')
+    script(src='/javascripts/hylas-table.js')
+    script(src='/javascripts/hylas-histogram.js')
+
 block content
-    h1= title
-    p Welcome to #{title}
+    div(id='hylas_table') table goes here.
+    div(id='histogram') 
