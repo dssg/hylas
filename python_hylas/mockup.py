@@ -79,7 +79,7 @@ def top_units():
 
 @app.route('/distribution', methods=['GET'])
 def distribution():
-    col = request.args['col']
+    col = request.args.get('col', 'f4')
     return jsonify(data=list(M_test[::2,feature_name_back_idx[col]]))
 
 if __name__ == '__main__':
