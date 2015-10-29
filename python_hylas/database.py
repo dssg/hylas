@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 
+district_table_map = {'vps': 'vancouver', 'wcpss': 'wake'}
 
 def connect(settings):
     """
@@ -20,13 +21,20 @@ def connect(settings):
 
 
 def get_summary_features(settings, summary_hash, schema=None):
+    schema = district_table_map[schema]
     engine = connect(settings)
     conn = engine.raw_connection()
+    cur = conn.cursor()
     sql = "SELECT * FROM {}.summary WHERE summary_hash='{}'".format(schema, summary_hash)
-    summary = conn.execute(sql)
+    cur.execute(sql)
+    summary = cur.fetchone()
     if summary:
         sql = "SELECT * FROM {}.results WHERE summary_id='{}'".format(schema, summary_hash)
-        results = conn.execute(sql)
+        results = cur.execute(sql)
+        cur.close()
+        conn.close()
         return results
     else:
+        cur.close()
+        conn.close()
         return False

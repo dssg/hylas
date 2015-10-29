@@ -30,21 +30,6 @@ def get_top_features(data, time_col, X_cols, y_col, district, X_categories=None,
 
     """ Not sure how to include category data at this point """
 
-    # if X_categories is not None:
-    #     print X_categories.head()
-    #     # Determine the unique feature categories.
-    #     unique_categories = X_categories['feature_category_primary'].unique()
-    #     # Drop feature categories that should not be used for modeling.
-    #     categories_to_drop = np.array(['id', 'attendance', 'coursework', 'demographic', 'school'])
-    #     unique_categories = np.array(list(set(x for x in unique_categories.tolist()).difference(set(x for x in categories_to_drop.tolist()))))
-    #     # Add single feature categories to the feature sets.
-    #     feat_sets.extend([[x] for x in unique_categories])
-    #     # Add all but single feature categories to the feature sets.
-    #     feat_sets.extend(list(itertools.combinations(unique_categories, len(unique_categories)-1)))
-    #     # Add all categories to the feature sets.
-    #     feat_sets.extend(list(itertools.combinations(unique_categories, len(unique_categories))))
-
-
     clf_name = str(clf)[:str(clf).index('(')]
     smoted = ''
     subsampled = ''
@@ -66,28 +51,11 @@ def get_top_features(data, time_col, X_cols, y_col, district, X_categories=None,
         # The regex should select all columns except those prefixed by a higher grade level.
         X_cols_filtered_by_grade = filter(lambda i: regex.search(i), X_cols_filtered_by_grade)
 
-
-    if X_categories is not None:
-        # Filter to only columns/features to be used for modeling.
-        filtered_feats = X_categories.loc[X_categories['exclude_when_modeling'] == 0]
-        # Filter to only columns/features in the selected feature categories.
-        filtered_feats = filtered_feats['feature_name'].loc[filtered_feats['feature_category_primary'].isin(features)]
-        category_regex = '('
-        for feat in filtered_feats:
-            category_regex += r"{feat}|".format(feat=str(feat))
-        category_regex = category_regex[:-1] # remove last '|'
-        category_regex = category_regex + ')'
-        regex = re.compile(category_regex)
-        # The regex should select all columns that are a member of each selected feature category.
-        X_cols_filtered_by_grade_and_category = filter(lambda i: regex.search(i), X_cols_filtered_by_grade)
-
-        print("  %i features." % (len(X_cols_filtered_by_grade_and_category)))
-        x_cols_filtered_by_grade_and_category = X_cols_filtered_by_grade
-
     # Set training/testing labels (train = 0, test = 1).
     kf_labels = np.where((train_and_test['cohort'] >= test_year), 1, 0)
-    train, test = [(np.where(kf_labels == 0)[0], np.where(kf_labels == 1)[0])]
-    x = train_and_test[x_cols_filtered_by_grade_and_category].as_matrix()
+    train, test = np.where(kf_labels == 0)[0], np.where(kf_labels == 1)[0]
+    X_cols_filtered_by_grade.remove('date_of_birth') # Perhaps remove this in a more elegant way
+    x = train_and_test[X_cols_filtered_by_grade].as_matrix()
     y = train_and_test[y_col].as_matrix()
     x_train, y_train = x[train], y[train]
 
@@ -110,14 +78,16 @@ def get_top_features(data, time_col, X_cols, y_col, district, X_categories=None,
     settings = config.settings['general']['database']
     summary = get_summary_features(settings, summary_hash, district)
 
-    # If model exists, return its top features. Else calculate, and maybe and write to db.
-    if summary:
+    # If the existing endpoint is too slow, try looking up feature data in summary table.
+    # This will require some modification in the data being written to db so I'm holding off for now
+    db_check = False
+    if db_check and summary:
         return str(summary['features'])
 
     else:
         # Generate "probabilities" for the current hold-out sample being predicted.
         fitted_clf = clf.fit(x_train_t, y_train_t)
-        features_list = train_and_test[X_cols_filtered_by_grade_and_category].columns.values
+        features_list = train_and_test[X_cols_filtered_by_grade].columns.values
 
         # Fit a random forest with (mostly) default parameters to determine feature importance
         feature_importance = fitted_clf.feature_importances_
@@ -139,7 +109,7 @@ def get_top_features(data, time_col, X_cols, y_col, district, X_categories=None,
         return str(features)
 
 def fetch_data(district=None, from_pickle=False, pickle_filename=None, unit_col='student_id', time_col='grade_level'):
-    if from_pickle == True and pickle_filename is not None:
+    if from_pickle and pickle_filename is not None:
         print("Reading pickle file.")
         data = pd.read_pickle(pickle_filename + '.pkl')
         if os.path.isfile(pickle_filename + '_cats' + '.pkl'):
@@ -329,4 +299,4 @@ def parse_and_order(feat_string):
         feat_name, importance = f.split(',')
         importance = float(importance)
         top_feats.append([feat_name, importance])
-    return sorted(top_feats, key=lambda x: x[1])
+    return sorted(top_feats, key=lambda x: -x[1])

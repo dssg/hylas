@@ -1,0 +1,6 @@
+hspipeline.egg-info/PKG-INFO
+hspipeline.egg-info/SOURCES.txt
+hspipeline.egg-info/dependency_links.txt
+hspipeline.egg-info/pbr.json
+hspipeline.egg-info/requires.txt
+hspipeline.egg-info/top_level.txt
