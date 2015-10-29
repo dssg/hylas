@@ -40,11 +40,11 @@ def top_features():
     label_col = 'label'
     district = 'vps'
 
-    data, X_categories = fetch_data(district=district,
-                                    from_pickle=False,
+    data, x_categories = fetch_data(district=district,
                                     unit_col=unit_col,
                                     time_col=time_col
                                     )
+
     if district == 'wcpss':
         data = data.drop(['age_first_entered_wcpss'], 1)
         data = data.drop(['age_entered_into_us'], 1)
@@ -52,12 +52,12 @@ def top_features():
     x_cols = data.columns[(data.columns != label_col) & (data.columns != unit_col) & (data.columns != time_col)]
     y_col = label_col
 
-    top_feature_str = get_top_features(n, data, time_col, x_cols, y_col, district,
-           X_categories=X_categories)
+    top_feature_str = get_top_features(data, time_col, x_cols, y_col, district, x_categories)
 
-    top_feature_cols = parse_and_order(top_feature_str)
+    top_n_features = parse_and_order(top_feature_str)[:n]
 
-    return jsonify(data=top_feature_cols[:n])    
+    return jsonify(data=top_n_features)
+
 
 @app.route('/top_units', methods=['GET'])
 def top_units():

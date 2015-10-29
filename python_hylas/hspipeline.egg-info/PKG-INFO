@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: hspipeline
+Version: 0.1
+Summary: A data science pipeline to predict whether students will graduate from high school on time.
+Home-page: https://github.com/dssg/education-highschool
+Author: Team High School Graduation
+Author-email: UNKNOWN
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
