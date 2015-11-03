@@ -7,6 +7,13 @@ block scripts
     script(src='/javascripts/hylas-histogram.js')
 
 block content
+    | Number of features: 
+    input(type='number', id='txt_n_features', value=10)
+    br
+    | Number of units:
+    input(type='number', id='txt_n_units', value=10)
+    br
+    input(type='submit', id='btn_gen_table')
     div(id='hylas_table') table goes here.
     h3(id='histogram_title') Click on a cell to plot distibution
     div(id='histogram') 

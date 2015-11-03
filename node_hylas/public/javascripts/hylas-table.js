@@ -16,20 +16,21 @@ var makeCellCallBack = function(row, col, val) {
     };
 }
 
-
-$(document).ready(function() {
-    $.getJSON('/data/top_features', function(jd) {
+var populate_table = function(n_units, n_features) {
+    $.getJSON('/data/top_features?n=' + n_features, function(jd) {
         var topFeatures = jd.data;
         topFeatures.push('row_num');
         topFeatures.push('pred_proba');
         var table = $('<table></table>');
+        table.attr('id', 'hylas_table');
         var row = $('<tr></tr>');
         topFeatures.forEach(function(th) {
             var cell = $('<th></th>').text(th);
             row.append(cell);
         });
         table.append(row);
-        $.getJSON('/data/top_units?n=10&cols=' + topFeatures.toString(), 
+        $.getJSON('/data/top_units?n=' + n_units + '&cols=' + 
+            topFeatures.toString(), 
             function(jd) {
             var columns = jd.data;
             var nRows = columns[Object.keys(columns)[0]].length;
@@ -52,5 +53,11 @@ $(document).ready(function() {
             $('#hylas_table').replaceWith(table);
         });
     });
+}
 
+$(document).ready(function() {
+    populate_table(10, 10);
+    $('#btn_gen_table').click(function () {
+        populate_table($('#txt_n_units').val(), $('#txt_n_features').val());
+    });
 });
