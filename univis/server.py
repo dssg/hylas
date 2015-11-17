@@ -8,7 +8,9 @@ from flask import request
 from flask import send_from_directory
 import numpy as np
 
-from sklearn.metrics import f1_score, precision_recall_curve
+from sklearn.metrics import f1_score, roc_curve
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
 
 from diogenes.display import get_top_features
 
@@ -33,8 +35,6 @@ def register_model(fitted_clf, time, M_train, M_test, labels_train,
         'col_idx': col_idx,
         'uid_idx': {uid: idx for idx, uid in 
             enumerate(M_test[:,col_idx[uid_feature]])}})
-
-
 
 app = Flask(__name__)
 
@@ -143,5 +143,19 @@ def debug():
     return send_from_directory('', 'requester.html')    
 
 if __name__ == '__main__':
+
+    # for now, build a sample model
+    M, labels = make_classification(n_samples=1000)
+    M[:,0] = np.arange(1000)
+    M_train = M[:800]
+    labels_train = labels[:800]
+    M_test = M[800:]
+    labels_test = labels[800:]
+    feature_names = ['f{}'.format(i) for i in xrange(M.shape[1])]
+    clf = RandomForestClassifier()
+    clf.fit(M_train, labels_train)
+    register_model(clf, 'NOW', M_train, M_test, labels_train, labels_test,
+                   feature_names, 'f0')
+
     app.run(debug=True)
 
