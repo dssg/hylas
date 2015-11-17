@@ -5,6 +5,7 @@ import json
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask import send_from_directory
 import numpy as np
 
 from sklearn.metrics import f1_score, precision_recall_curve
@@ -44,7 +45,8 @@ def list_models():
            enumerate(models)]
     return jsonify(data=ret)
 
-@app.route('/model_info', methods=['GET']):
+@app.route('/model_info', methods=['GET'])
+def model_info():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     perf_metrics = {'f1_score' : f1_score(model['labels_test'], 
@@ -132,10 +134,14 @@ def similar():
     top_idxs = np.argsort(error)[:n]
     top_uids = uid_col[top_idxs]
     top_scores = target_col[top_idxs]
-    ret = [{'unit_id': uid, 'score': score for uid, score in
-            zip(top_uidx, top_scores}]
+    ret = [{'unit_id': uid, 'score': score} for uid, score in
+            zip(top_uidx, top_scores)]
     return jsonify(data=ret)
     
+@app.route('/debug', methods=['GET'])
+def debug():
+    return send_from_directory('', 'requester.html')    
+
 if __name__ == '__main__':
     app.run(debug=True)
 
