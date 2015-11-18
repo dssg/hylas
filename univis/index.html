@@ -1,30 +1,64 @@
 <html>
     <head>
         <!-- Angular Material Dependencies -->
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-aria.min.js"></script>
+        <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.14.3.js"></script>
 
-
-        <!-- Angular Material Javascript now available via Google CDN; version 0.11.2 used here -->
-        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.11.2/angular-material.min.js"></script>
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
 
         <div ng-app="univisApp" ng-controller="univisCtrl">
-            <ul>
-                <li ng-repeat="model in model_list">
-                    {{ model.model_id + ' ' + model.name + ' ' + model.time }}
-                </li>
-            </ul>
+            <uib-accordion> 
+                <uib-accordion-group heading="Models" 
+                    is-open="open_view=='models'"> 
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th>Classifier Name</th>
+                            <th>Time</th>
+                        </tr>
+                        <tr ng-repeat="model in model_list">
+                            <td> 
+                                <button type="button" ng-click="pickModel($index)">
+                                    Examine
+                                </button>
+                            </td>
+                            <td> {{ model.name }} </td>
+                            <td> {{ model.time }} </td>
+                        </tr>
+                    </table>
+                </uib-accordion-group>
+            <uib-accordion-group heading="Model performance" 
+                is-open="open_view=='model_performance'">
+                2
+            </uib-accordion-group>
+            <uib-accordion-group heading="Student performance" 
+                is-open="open_view=='student_performance'">
+                <uib-tabset>
+                    <uib-tab heading="Distributions">
+                    </uib-tab>
+                    <uib-tab heading="Similar">
+                    </uib-tab>
+                </uib-tabset>
+            </uib-accordion-group>
+            </uib-accordion>
         </div>
 
         <script>
-            var app = angular.module('univisApp', []);
+            var app = angular.module('univisApp', ['ui.bootstrap']);
             app.controller('univisCtrl', function($scope, $http) {
                 $scope.model_list = [];
                 $http.get('/list_models').then( function (response) {
+                    $scope.pickModel = function ($index) {
+                        $scope.model_id = $index;
+                        console.log($scope.model_id);
+                        $scope.open_view = 'model_performance'
+                    }
                     $scope.model_list = angular.fromJson(response.data).data;
+                    $scope.open_view = 'models'
                 }, function (response) {});
             });
         </script>
