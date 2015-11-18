@@ -95,8 +95,8 @@ def unit():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     unit_id = int(request.args.get('unit_id'))
-    features = request.args.get('features', None)
-    if features is None:
+    features = request.args.get('features', '')
+    if not features:
         features = model['feature_names']
     else:
         features = features.split(',')
@@ -108,7 +108,6 @@ def unit():
 
 @app.route('/distribution', methods=['GET'])
 def distribution():
-    #TODO here
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     feature = request.args.get('feature')
