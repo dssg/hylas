@@ -10,6 +10,7 @@ import numpy as np
 
 from sklearn.metrics import f1_score, roc_curve
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification
 
 from diogenes.display import get_top_features
@@ -52,7 +53,8 @@ def model_info():
     perf_metrics = {'f1_score' : f1_score(model['labels_test'], 
                     model['predicted'])}
     fpr, tpr, thresholds = roc_curve(model['labels_test'], model['pred_proba']) 
-    graphs = {'roc': {'fpr': fpr, 'tpr': tpr, 'thresholds': thresholds}}
+    graphs = {'roc': {'fpr': list(fpr), 'tpr': list(tpr), 
+              'thresholds': list(thresholds)}}
     # TODO other perf metrics
     ret = {'model_id': model_id, 'name': model['clf_name'], 
            'time': model['time'], 'perf_metrics': perf_metrics, 
@@ -70,7 +72,9 @@ def top_features():
             model['clf'], 
             col_names=model['feature_names'],
             n=n)
-    return jsonify(data=top_features['feat_name'])
+    ret = [{'feature': feat, 'score': score} for feat, score in 
+           top_features]
+    return jsonify(data=ret)
 
 @app.route('/top_units', methods=['GET'])
 def top_units():
@@ -80,7 +84,7 @@ def top_units():
     pred_proba = model['pred_proba']
     sorted_idxs = np.argsort(pred_proba)[::-1]
     top_idxs = sorted_idxs[:n]
-    top_uid = model['M_train'][top_idxs,model['col_idx'][model['uid_feature']]]
+    top_uid = model['M_test'][top_idxs,model['col_idx'][model['uid_feature']]]
     top_scores = pred_proba[top_idxs]
     ret = [{'unit_id': uid, 'score': score} for uid, score in 
            zip(top_uid, top_scores)]
@@ -90,7 +94,7 @@ def top_units():
 def unit():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
-    unit_id = float(request.args.get('unit_id'))
+    unit_id = int(request.args.get('unit_id'))
     features = request.args.get('features', None)
     if features is None:
         features = model['feature_names']
@@ -107,7 +111,7 @@ def distribution():
     #TODO here
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
-    feature = requests.args.get('feature')
+    feature = request.args.get('feature')
     labels_test = model['labels_test']
     col = model['M_train'][:, model['col_idx'][feature]]
     positive = col[labels_test]
@@ -126,16 +130,17 @@ def similar():
     # TODO similarity based on more than just the first feature in the list
     feature = features[0]
 
-    M_train = model['M_train']
-    target_col = M_train[:, model['col_idx'][feature]]
-    uid_col = M_train[:, model['col_idx'][model['uid_feature']]]
+    M_test = model['M_test']
+    target_col = M_test[:, model['col_idx'][feature]]
+    uid_col = M_test[:, model['col_idx'][model['uid_feature']]]
     target_val = target_col[model['uid_idx'][unit_id]]
-    error = (target_col - target_val) ** 2
+    error = np.sqrt((target_col - target_val) ** 2)
     top_idxs = np.argsort(error)[:n]
     top_uids = uid_col[top_idxs]
-    top_scores = target_col[top_idxs]
-    ret = [{'unit_id': uid, 'score': score} for uid, score in
-            zip(top_uidx, top_scores)]
+    top_vals = target_col[top_idxs]
+    top_scores = (1 - error / np.linalg.norm(error))[top_idxs]
+    ret = [{'unit_id': uid, 'score': score, feature: val} for uid, val, score in
+            zip(top_uids, top_vals, top_scores)]
     return jsonify(data=ret)
     
 @app.route('/debug', methods=['GET'])
@@ -152,9 +157,13 @@ if __name__ == '__main__':
     M_test = M[800:]
     labels_test = labels[800:]
     feature_names = ['f{}'.format(i) for i in xrange(M.shape[1])]
-    clf = RandomForestClassifier()
-    clf.fit(M_train, labels_train)
-    register_model(clf, 'NOW', M_train, M_test, labels_train, labels_test,
+    rf_clf = RandomForestClassifier()
+    rf_clf.fit(M_train, labels_train)
+    register_model(rf_clf, 'NOW', M_train, M_test, labels_train, labels_test,
+                   feature_names, 'f0')
+    lr_clf = LogisticRegression()
+    lr_clf.fit(M_train, labels_train)
+    register_model(lr_clf, 'BEFORE', M_train, M_test, labels_train, labels_test,
                    feature_names, 'f0')
 
     app.run(debug=True)
