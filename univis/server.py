@@ -147,6 +147,10 @@ def similar():
 def debug():
     return send_from_directory('', 'requester.html')    
 
+@app.route('/', methods=['GET'])
+def index():
+    return send_from_directory('', 'index.html')    
+
 if __name__ == '__main__':
 
     # for now, build a sample model
