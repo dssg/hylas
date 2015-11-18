@@ -160,13 +160,13 @@ if __name__ == '__main__':
     M_test = M[800:]
     labels_test = labels[800:]
     feature_names = ['f{}'.format(i) for i in xrange(M.shape[1])]
-    rf_clf = RandomForestClassifier()
+    rf_clf = RandomForestClassifier(n_estimators=10)
     rf_clf.fit(M_train, labels_train)
     register_model(rf_clf, 'NOW', M_train, M_test, labels_train, labels_test,
                    feature_names, 'f0')
-    lr_clf = LogisticRegression()
-    lr_clf.fit(M_train, labels_train)
-    register_model(lr_clf, 'BEFORE', M_train, M_test, labels_train, labels_test,
+    rf_clf_2 = RandomForestClassifier(n_estimators=100)
+    rf_clf_2.fit(M_train, labels_train)
+    register_model(rf_clf_2, 'BEFORE', M_train, M_test, labels_train, labels_test,
                    feature_names, 'f0')
 
     app.run(debug=True)

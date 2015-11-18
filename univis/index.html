@@ -22,7 +22,7 @@
         <div ng-app="univisApp" ng-controller="univisCtrl">
             <uib-accordion> 
                 <uib-accordion-group heading="Models" 
-                    is-open="open_view=='models'"> 
+                    is-open="models_open"> 
                     <table>
                         <tr>
                             <th></th>
@@ -41,7 +41,7 @@
                     </table>
                 </uib-accordion-group>
             <uib-accordion-group heading="Model performance" 
-                is-open="open_view=='model_performance'">
+                is-open="model_performance_open">
                 <div>
                     model perf goes here
                 </div>
@@ -63,7 +63,7 @@
                 </table>
             </uib-accordion-group>
             <uib-accordion-group heading="Unit performance" 
-                is-open="open_view=='unit_performance'">
+                is-open="unit_performance_open">
                 <uib-tabset>
                     <uib-tab heading="Distributions">
                         {{ unit }}<br>
@@ -133,12 +133,12 @@
                             console.log('top_n_feature_names');
                             console.log($scope.top_n_feature_names);
                         }, function (response) {});
-                    $scope.open_view = 'model_performance'
+                    $scope.model_performance_open = true;
                 }
 
                 $http.get('/list_models').then( function (response) {
                     $scope.model_list = angular.fromJson(response.data).data;
-                    $scope.open_view = 'models'
+                    $scope.models_open = true;
                 }, function (response) {});
 
                 $scope.pickUnit = function ($index, pool) {
@@ -157,7 +157,7 @@
                             $scope.unit = angular.fromJson(
                                 response.data).data;
                         }, function (response) {});
-                    $scope.open_view = 'unit_performance'
+                    $scope.unit_performance_open=true;
                 }
 
                 $scope.pickSimilarFeature = function (feature) {
@@ -172,6 +172,10 @@
                                 response.data).data;
                         }, function (response) {});
                 }
+
+                $scope.models_open = false;
+                $scope.model_performance_open = false;
+                $scope.unit_performance_open = false;
 
                 $scope.model_list = [];
                 $scope.top_features = [];
