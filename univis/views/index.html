@@ -40,6 +40,10 @@
                 </uib-accordion-group>
             <uib-accordion-group heading="Model Performance" 
                 is-open="open_view==='model_performance'">
+                <button type="button" ng-click="goTo('models')">
+                    back
+                </button>
+                <br>
                 <uib-tabset>
                     <uib-tab heading="Model Performance">
                         Model Name: {{ model_info.name }}<br>
@@ -53,9 +57,6 @@
                         <br>
                         <nvd3 options="roc.options" data="roc.data">
                         </nvd3>
-                        <button type="button" ng-click="goTo('models')">
-                            back
-                        </button>
                     </uib-tab>
                     <uib-tab heading="Top Units"> 
                         <table>
@@ -76,42 +77,43 @@
                             </tr>
                         </table>
                         <br>
-                        <button type="button" ng-click="goTo('models')">
-                            back
-                        </button>
                     </uib-tab>
                 </uib-tabset>
             </uib-accordion-group>
             <uib-accordion-group heading="Unit performance" 
                 is-open="open_view==='unit_performance'">
+                <button type="button" 
+                    ng-click="goTo('model_performance')">
+                    back
+                </button>
+                <br>
+                <div class="btn-group" uib-dropdown>
+                    <button type="button" class="btn btn-primary" 
+                        uib-dropdown-toggle> 
+                        {{similar_feature}} <span class="caret"></span>
+                    </button>
+                    <ul class="uib-dropdown-menu" role="menu" 
+                        aria-labelledby="single-button">
+                        <li role="menuitem"
+                            ng-repeat="feature in top_n_feature_names">
+                            <a 
+                                ng-click="pickSimilarFeature(feature)">
+                                {{feature}}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <br>
                 <uib-tabset>
                     <uib-tab heading="Distributions">
                         {{ unit }}<br>
+                        <nvd3 options="dist.options" data="dist.data">
+                        </nvd3>
                         distribution info goes here
 
                         <br>
-                        <button type="button" 
-                            ng-click="goTo('model_performance')">
-                            back
-                        </button>
                     </uib-tab>
                     <uib-tab heading="Similar">
-                        <div class="btn-group" uib-dropdown>
-                            <button type="button" class="btn btn-primary" 
-                                uib-dropdown-toggle> 
-                                {{similar_feature}} <span class="caret"></span>
-                            </button>
-                            <ul class="uib-dropdown-menu" role="menu" 
-                                aria-labelledby="single-button">
-                                <li role="menuitem"
-                                    ng-repeat="feature in top_n_feature_names">
-                                    <a 
-                                        ng-click="pickSimilarFeature(feature)">
-                                        {{feature}}
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
                         <table>
                             <tr>
                                 <th></th>
@@ -129,10 +131,6 @@
                             </tr>
                         </table>
                         <br>
-                        <button type="button" 
-                            ng-click="goTo('model_performance')">
-                            back
-                        </button>
                     </uib-tab>
                 </uib-tabset>
             </uib-accordion-group>

@@ -1,23 +1,34 @@
 var Uniplot = {};
-Uniplot.makeBins = function(data, nBins) {
-    var min = Math.min.apply(null, data);
-    var max = Math.max.apply(null, data);
-    var range = max - min;
+Uniplot.makeBins = function(data, options) {
+    // Options must provide either nBins or centers
+    if (!('centers' in options)) {
+        var nBins = options.nBins;
+        var min = Math.min.apply(null, data);
+        var max = Math.max.apply(null, data);
+        var range = max - min;
+        var barWidth = range / nBins;
+        var centers = [];
+        for (var i = 0; i < nBins; i++) {
+            centers.push((i / nBins) * range + min - (barWidth / 2));
+        }
+    } else {
+        var centers = options.centers;
+        var nBins = centers.length;
+        var barWidth = centers[1] - centers[0];
+        var min = centers[0] - barWidth / 2;
+        var max = centers[centers.length-1] + barWidth / 2;
+        var range = max - min;
+    }
     // http://stackoverflow.com/questions/1295584/most-efficient-way-to-create-a-zero-filled-javascript-array
-    var bins = Array.apply(null, Array(nBins)).map(Number.prototype.valueOf,0);
+    var height = Array.apply(null, Array(nBins)).map(Number.prototype.valueOf,0);
     data.forEach(function(x) {
         var bin = Math.min(Math.round(((x - min) / range) * nBins), nBins -1);
-        bins[bin]++;
+        height[bin]++;
     });
-    var barWidth = range / nBins;
-    var centers = [];
-    for (var i = 0; i < nBins; i++) {
-        centers.push((i / nBins) * range + min - (barWidth / 2));
-    }
-    return {'centers': centers, 'height': height};
+    return {'centers': centers, 'height': height, 'barWidth': barWidth, 'nBins': nBins};
 }
 
-Uniplot.toData = function(x, y) {
+Uniplot.toData = function(x, y, key) {
     var points = [];
     for (var i = 0; i < x.length; ++i) {
         points.push({
@@ -25,11 +36,11 @@ Uniplot.toData = function(x, y) {
             'y': y[i]
         });
     }
-    return [{values: points, key: 'series'}];
+    return {values: points, key: key};
 }
 
 Uniplot.line = function (context, x, y, title, xLabel, yLabel) {
-    context.data = Uniplot.toData(x, y);
+    context.data = [Uniplot.toData(x, y, 'series')];
     context.options = {
         chart: {
             type: 'lineChart',
@@ -55,3 +66,27 @@ Uniplot.line = function (context, x, y, title, xLabel, yLabel) {
         }
     }
 } 
+
+Uniplot.distributions = function (context, positive, negative, special_point, title) {
+    var all_entries = positive.concat(negative);
+    var hist_all = Uniplot.makeBins(all_entries, {nBins: Math.trunc(all_entries.length)});
+    var hist_positive = Uniplot.makeBins(positive, {centers: hist_all.centers});
+    var hist_negative = Uniplot.makeBins(negative, {centers: hist_all.centers});
+    context.options = {
+        chart: {
+            type: 'multiBarChart',
+            height: 180,
+            x: function(d){return d.x},
+            y: function(d){return d.y},
+            stacked: false
+        },
+        title: {
+            enable: true,
+            text: title
+        }
+    }
+    console.log(hist_positive);
+    console.log(hist_negative);
+    context.data = [Uniplot.toData(hist_positive.centers, hist_positive.heights, 'positive'),
+                    Uniplot.toData(hist_negative.centers, hist_negative.heights, 'negative')]
+}

@@ -9,7 +9,6 @@ app.controller('univisCtrl', function($scope, $http) {
             'ROC',
             'FPR',
             'TPR');
-        console.log($scope.roc);
     }
 
     $scope.pickModel = function ($index) {
@@ -61,6 +60,21 @@ app.controller('univisCtrl', function($scope, $http) {
                 $scope.unit = angular.fromJson(
                     response.data).data;
             }, function (response) {});
+        //TODO for multiple features
+        var dist_feature = $scope.top_n_feature_names[0];
+
+        $http.get('/distribution', {'params': {
+            'model_id': $scope.model_id,
+            'feature': dist_feature}})
+            .then( function (response) {
+                var dist = angular.fromJson(response.data).data;
+                Uniplot.distributions(
+                    $scope.dist, 
+                    dist.positive, 
+                    dist.negative,
+                    dist_feature);
+            }, function (response) {});
+        
         $scope.open_view = 'unit_performance';
     }
 
@@ -90,11 +104,11 @@ app.controller('univisCtrl', function($scope, $http) {
     $scope.unit = {};
     $scope.similar_feature = 'Choose a Feature';
     $scope.similar_units = [];
+    $scope.dist = {};
 
     $http.get('/list_models').then( function (response) {
         $scope.model_list = angular.fromJson(response.data).data;
     }, function (response) {});
 
     $scope.open_view = 'models';
-    $scope.log = function (m) {console.log(m);};
 });
