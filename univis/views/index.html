@@ -51,13 +51,8 @@
                             </tr>
                         </table>
                         <br>
-                        <span class="vertical-text">fpr</span>
-                        <!--
-                        <canvas class="chart chart-line" 
-                            chart-data="model_info.graphs.roc.data"
-                            chart-labels="model_info.graphs.roc.fpr">
-                        </canvas>
-                        -->
+                        <nvd3 options="roc.options" data="roc.data">
+                        </nvd3>
                         <button type="button" ng-click="goTo('models')">
                             back
                         </button>

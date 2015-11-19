@@ -1,5 +1,16 @@
-var app = angular.module('univisApp', ['ui.bootstrap']);
+var app = angular.module('univisApp', ['ui.bootstrap', 'nvd3']);
 app.controller('univisCtrl', function($scope, $http) {
+
+    var updateModelInfo = function() {
+        Uniplot.line(
+            $scope.roc,
+            $scope.model_info.graphs.roc.fpr,
+            $scope.model_info.graphs.roc.tpr,
+            'ROC',
+            'FPR',
+            'TPR');
+        console.log($scope.roc);
+    }
 
     $scope.pickModel = function ($index) {
         $scope.model_id = $index;
@@ -27,8 +38,7 @@ app.controller('univisCtrl', function($scope, $http) {
             .then( function (response) {
                 $scope.model_info = angular.fromJson(
                     response.data).data;
-                $scope.model_info.graphs.roc.data = 
-                    [$scope.model_info.graphs.roc.tpr];
+                updateModelInfo();
             }, function (response) {});
         $scope.open_view = 'model_performance';
     }
@@ -73,6 +83,7 @@ app.controller('univisCtrl', function($scope, $http) {
 
     $scope.model_list = [];
     $scope.model_info = {};
+    $scope.roc = {};
     $scope.top_features = [];
     $scope.top_n_feature_names = [];
     $scope.top_units = [];

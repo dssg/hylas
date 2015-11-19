@@ -16,3 +16,42 @@ Uniplot.makeBins = function(data, nBins) {
     }
     return {'centers': centers, 'height': height};
 }
+
+Uniplot.toData = function(x, y) {
+    var points = [];
+    for (var i = 0; i < x.length; ++i) {
+        points.push({
+            'x': x[i],
+            'y': y[i]
+        });
+    }
+    return [{values: points, key: 'series'}];
+}
+
+Uniplot.line = function (context, x, y, title, xLabel, yLabel) {
+    context.data = Uniplot.toData(x, y);
+    context.options = {
+        chart: {
+            type: 'lineChart',
+            height: 180,
+            margin : {
+                top: 20,
+                right: 20,
+                bottom: 40,
+                left: 55
+            },
+            x: function(d){ return d.x; },
+            y: function(d){ return d.y; },
+            xAxis: {
+                axisLabel: xLabel
+            },
+            yAxis: {
+                axislabel: yLabel
+            },
+        },
+        title: {
+            enable: true,
+            text: title
+        }
+    }
+} 
