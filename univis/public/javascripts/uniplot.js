@@ -25,10 +25,12 @@ Uniplot.makeBins = function(data, options) {
         var bin = Math.min(Math.round(((x - min) / range) * nBins), nBins -1);
         height[bin]++;
     });
-    return {'centers': centers, 'height': height, 'barWidth': barWidth, 'nBins': nBins};
+    return {'centers': centers, 'heights': height, 'barWidth': barWidth, 'nBins': nBins};
 }
 
 Uniplot.toData = function(x, y, key) {
+    console.log(x);
+    console.log(y);
     var points = [];
     for (var i = 0; i < x.length; ++i) {
         points.push({
@@ -69,7 +71,7 @@ Uniplot.line = function (context, x, y, title, xLabel, yLabel) {
 
 Uniplot.distributions = function (context, positive, negative, special_point, title) {
     var all_entries = positive.concat(negative);
-    var hist_all = Uniplot.makeBins(all_entries, {nBins: Math.trunc(all_entries.length)});
+    var hist_all = Uniplot.makeBins(all_entries, {nBins: 10});
     var hist_positive = Uniplot.makeBins(positive, {centers: hist_all.centers});
     var hist_negative = Uniplot.makeBins(negative, {centers: hist_all.centers});
     context.options = {
@@ -85,8 +87,6 @@ Uniplot.distributions = function (context, positive, negative, special_point, ti
             text: title
         }
     }
-    console.log(hist_positive);
-    console.log(hist_negative);
     context.data = [Uniplot.toData(hist_positive.centers, hist_positive.heights, 'positive'),
                     Uniplot.toData(hist_negative.centers, hist_negative.heights, 'negative')]
 }
