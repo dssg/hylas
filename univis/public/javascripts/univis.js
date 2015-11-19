@@ -29,6 +29,7 @@ app.controller('univisCtrl', function($scope, $http) {
     $scope.pickUnit = function ($index, pool) {
         if (pool === 'similar') {
             $scope.unit_id = $scope.similar_units[$index].unit_id;
+            $scope.pickSimilarFeature($scope.similar_feature);
         } else {
             $scope.unit_id = $scope.top_units[$index].unit_id;
         }
