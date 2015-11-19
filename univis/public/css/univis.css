@@ -1,0 +1,15 @@
+/* http://stackoverflow.com/questions/23205420/how-can-i-get-angular-ui-bootstrap-tabs-to-fill-the-remaining-height */
+html, body, .tabset, .tab-content, .tab-pane, .tabbable {
+    height:100%;
+}
+.tab-content {
+    height:100%;
+}
+table {
+    border-spacing: 2px;
+    border-collapse: collapse;
+}
+td, th { 
+    padding-left: 5px;
+    padding-right: 5px;
+}

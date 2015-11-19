@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import json
 
 from flask import Flask
@@ -144,11 +145,20 @@ def similar():
     
 @app.route('/debug', methods=['GET'])
 def debug():
-    return send_from_directory('', 'requester.html')    
+    return send_from_directory('views', 'requester.html')    
 
 @app.route('/', methods=['GET'])
 def index():
-    return send_from_directory('', 'index.html')    
+    return send_from_directory('views', 'index.html')    
+
+# http://stackoverflow.com/questions/20646822/how-to-serve-static-files-in-flask
+@app.route('/js/<path:path>', methods=['GET'])
+def js_path(path):
+    return send_from_directory(os.path.join('public', 'javascripts'), path)    
+
+@app.route('/css/<path:path>', methods=['GET'])
+def css_path(path):
+    return send_from_directory(os.path.join('public', 'css'), path)    
 
 if __name__ == '__main__':
 
