@@ -36,32 +36,52 @@
                         </tr>
                     </table>
                 </uib-accordion-group>
-            <uib-accordion-group heading="Model performance" 
+            <uib-accordion-group heading="Model Performance" 
                 is-open="open_view==='model_performance'">
-                <div>
-                    model perf goes here
-                </div>
-                <table>
-                    <tr>
-                        <th></th>
-                        <th>Score</th>
-                        <th>Unit ID</th>
-                    </tr>
-                    <tr ng-repeat="unit in top_units">
-                        <td> 
-                            <button type="button" 
-                                ng-click="pickUnit($index, 'top')">
-                                Examine
-                            </button>
-                        </td>
-                        <td> {{ unit.score }} </td>
-                        <td> {{ unit.unit_id }} </td>
-                    </tr>
-                </table>
-                <br>
-                <button type="button" ng-click="goTo('models')">
-                    back
-                </button>
+                <uib-tabset>
+                    <uib-tab heading="Model Performance">
+                        Model Name: {{ model_info.name }}<br>
+                        Model time: {{ model_info.time }}<br>
+                        <table>
+                            <tr ng-repeat="(metric, score) in model_info.perf_metrics">
+                                <td> {{ metric }} </td>
+                                <td> {{ score }} </td>
+                            </tr>
+                        </table>
+                        <br>
+                        <span class="vertical-text">fpr</span>
+                        <canvas class="chart chart-line" 
+                            chart-data="[model_info.graphs.roc.tpr]"
+                            chart-labels="model_info.graphs.roc.fpr">
+                        </canvas>
+                        <button type="button" ng-click="goTo('models')">
+                            back
+                        </button>
+                    </uib-tab>
+                    <uib-tab heading="Top Units"> 
+                        <table>
+                            <tr>
+                                <th></th>
+                                <th>Score</th>
+                                <th>Unit ID</th>
+                            </tr>
+                            <tr ng-repeat="unit in top_units">
+                                <td> 
+                                    <button type="button" 
+                                        ng-click="pickUnit($index, 'top')">
+                                        Examine
+                                    </button>
+                                </td>
+                                <td> {{ unit.score }} </td>
+                                <td> {{ unit.unit_id }} </td>
+                            </tr>
+                        </table>
+                        <br>
+                        <button type="button" ng-click="goTo('models')">
+                            back
+                        </button>
+                    </uib-tab>
+                </uib-tabset>
             </uib-accordion-group>
             <uib-accordion-group heading="Unit performance" 
                 is-open="open_view==='unit_performance'">

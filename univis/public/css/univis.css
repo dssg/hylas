@@ -13,3 +13,9 @@ td, th {
     padding-left: 5px;
     padding-right: 5px;
 }
+/* https://davidwalsh.name/css-vertical-text */
+.vertical-text {
+    transform: rotate(90deg);
+    transform-origin: left top 0;
+    float: left;
+}

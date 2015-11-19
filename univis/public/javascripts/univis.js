@@ -22,6 +22,12 @@ app.controller('univisCtrl', function($scope, $http) {
                 console.log('top_n_feature_names');
                 console.log($scope.top_n_feature_names);
             }, function (response) {});
+        $http.get('/model_info', {'params':
+            {'model_id': $scope.model_id}})
+            .then( function (response) {
+                $scope.model_info = angular.fromJson(
+                    response.data).data;
+            }, function (response) {});
         $scope.open_view = 'model_performance';
     }
 
@@ -64,6 +70,7 @@ app.controller('univisCtrl', function($scope, $http) {
     }
 
     $scope.model_list = [];
+    $scope.model_info = {};
     $scope.top_features = [];
     $scope.top_n_feature_names = [];
     $scope.top_units = [];

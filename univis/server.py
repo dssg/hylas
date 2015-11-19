@@ -172,11 +172,11 @@ if __name__ == '__main__':
     feature_names = ['f{}'.format(i) for i in xrange(M.shape[1])]
     rf_clf = RandomForestClassifier(n_estimators=10)
     rf_clf.fit(M_train, labels_train)
-    register_model(rf_clf, 'NOW', M_train, M_test, labels_train, labels_test,
+    register_model(rf_clf, 'November 10, 2015', M_train, M_test, labels_train, labels_test,
                    feature_names, 'f0')
     rf_clf_2 = RandomForestClassifier(n_estimators=100)
     rf_clf_2.fit(M_train, labels_train)
-    register_model(rf_clf_2, 'BEFORE', M_train, M_test, labels_train, labels_test,
+    register_model(rf_clf_2, 'November 12, 2015', M_train, M_test, labels_train, labels_test,
                    feature_names, 'f0')
 
     app.run(debug=True)
