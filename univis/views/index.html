@@ -15,7 +15,7 @@
         <div ng-app="univisApp" ng-controller="univisCtrl">
             <uib-accordion> 
                 <uib-accordion-group heading="Models" 
-                    is-open="models_open"> 
+                    is-open="open_view==='models'"> 
                     <table>
                         <tr>
                             <th></th>
@@ -34,7 +34,7 @@
                     </table>
                 </uib-accordion-group>
             <uib-accordion-group heading="Model performance" 
-                is-open="model_performance_open">
+                is-open="open_view==='model_performance'">
                 <div>
                     model perf goes here
                 </div>
@@ -46,7 +46,8 @@
                     </tr>
                     <tr ng-repeat="unit in top_units">
                         <td> 
-                            <button type="button" ng-click="pickUnit($index, 'top')">
+                            <button type="button" 
+                                ng-click="pickUnit($index, 'top')">
                                 Examine
                             </button>
                         </td>
@@ -54,13 +55,22 @@
                         <td> {{ unit.unit_id }} </td>
                     </tr>
                 </table>
+                <br>
+                <button type="button" ng-click="goTo('models')">
+                    back
+                </button>
             </uib-accordion-group>
             <uib-accordion-group heading="Unit performance" 
-                is-open="unit_performance_open">
+                is-open="open_view==='unit_performance'">
                 <uib-tabset>
                     <uib-tab heading="Distributions">
                         {{ unit }}<br>
                         distribution info goes here
+
+                        <button type="button" 
+                            ng-click="goTo('model_performance')">
+                            back
+                        </button>
                     </uib-tab>
                     <uib-tab heading="Similar">
                         <div class="btn-group" uib-dropdown>
@@ -95,6 +105,10 @@
                                 <td> {{ unit.unit_id }} </td>
                             </tr>
                         </table>
+                        <button type="button" 
+                            ng-click="goTo('model_performance')">
+                            back
+                        </button>
                     </uib-tab>
                 </uib-tabset>
             </uib-accordion-group>
