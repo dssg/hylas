@@ -76,7 +76,8 @@ Uniplot.distributions = function (context, positive, negative, special_point, ti
     var hist_negative = Uniplot.makeBins(negative, {centers: hist_all.centers});
     context.options = {
         chart: {
-            type: 'multiBarChart',
+            type: 'multiChart',
+            //type: 'scatterChart',
             height: 180,
             x: function(d){return d.x},
             y: function(d){return d.y},
@@ -87,6 +88,16 @@ Uniplot.distributions = function (context, positive, negative, special_point, ti
             text: title
         }
     }
-    context.data = [Uniplot.toData(hist_positive.centers, hist_positive.heights, 'positive'),
-                    Uniplot.toData(hist_negative.centers, hist_negative.heights, 'negative')]
+    var data_pos = Uniplot.toData(hist_positive.centers, hist_positive.heights, 'positive');
+    data_pos.type='bar';
+    data_pos.yAxis = 1;
+    var data_neg = Uniplot.toData(hist_negative.centers, hist_negative.heights, 'negative');
+    data_neg.type='bar';
+    data_neg.yAxis = 1;
+    //var data_special = Uniplot.toData([special_point], [Math.max.apply(null, hist_all.heights)/2], 'value for unit'); 
+    var data_special = Uniplot.toData([0, 1], [0, 1], 'value for unit'); 
+    data_special.type='scatter';
+    data_special.yAxis = 1;
+   // context.data = [data_pos, data_neg, data_special];
+    context.data = [data_special];
 }

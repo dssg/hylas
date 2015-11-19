@@ -72,6 +72,7 @@ app.controller('univisCtrl', function($scope, $http) {
                     $scope.dist, 
                     dist.positive, 
                     dist.negative,
+                    $scope.unit[dist_feature],
                     dist_feature);
             }, function (response) {});
         
