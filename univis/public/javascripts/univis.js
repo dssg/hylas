@@ -1,4 +1,4 @@
-var app = angular.module('univisApp', ['ui.bootstrap']);
+var app = angular.module('univisApp', ['ui.bootstrap', 'chart.js']);
 app.controller('univisCtrl', function($scope, $http) {
 
     $scope.pickModel = function ($index) {
