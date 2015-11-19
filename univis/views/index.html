@@ -4,13 +4,10 @@
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-aria.min.js"></script>
         <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.14.3.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
-        <script src="//cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
         <script src="js/univis.js"></script>
         <script src="js/uniplot.js"></script>
 
         <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="//cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.css" rel="stylesheet" />
         <link href="css/univis.css" rel="stylesheet" />
     </head>
     <body>
@@ -50,10 +47,12 @@
                         </table>
                         <br>
                         <span class="vertical-text">fpr</span>
+                        <!--
                         <canvas class="chart chart-line" 
-                            chart-data="[model_info.graphs.roc.tpr]"
+                            chart-data="model_info.graphs.roc.data"
                             chart-labels="model_info.graphs.roc.fpr">
                         </canvas>
+                        -->
                         <button type="button" ng-click="goTo('models')">
                             back
                         </button>

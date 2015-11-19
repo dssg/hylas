@@ -1,4 +1,4 @@
-var app = angular.module('univisApp', ['ui.bootstrap', 'chart.js']);
+var app = angular.module('univisApp', ['ui.bootstrap']);
 app.controller('univisCtrl', function($scope, $http) {
 
     $scope.pickModel = function ($index) {
@@ -27,6 +27,8 @@ app.controller('univisCtrl', function($scope, $http) {
             .then( function (response) {
                 $scope.model_info = angular.fromJson(
                     response.data).data;
+                $scope.model_info.graphs.roc.data = 
+                    [$scope.model_info.graphs.roc.tpr];
             }, function (response) {});
         $scope.open_view = 'model_performance';
     }
