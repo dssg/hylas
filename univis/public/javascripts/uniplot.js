@@ -94,6 +94,6 @@ Uniplot.distributions = function (context, positive, negative, special_point, ti
     }
     var data_pos = Uniplot.toData(hist_positive.centers, hist_positive.heights, 'positive');
     var data_neg = Uniplot.toData(hist_negative.centers, hist_negative.heights, 'negative');
-    var data_special = Uniplot.toData([special_point], [Math.max.apply(null, hist_all.heights)/2], 'value for unit'); 
+    var data_special = Uniplot.toData([special_point], [1], 'value for unit'); 
     context.data = [data_pos, data_neg, data_special];
 }
