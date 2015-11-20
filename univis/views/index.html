@@ -87,29 +87,31 @@
                     back
                 </button>
                 <br>
-                <div class="btn-group" uib-dropdown>
-                    <button type="button" class="btn btn-primary" 
-                        uib-dropdown-toggle> 
-                        {{similar_feature}} <span class="caret"></span>
-                    </button>
-                    <ul class="uib-dropdown-menu" role="menu" 
-                        aria-labelledby="single-button">
-                        <li role="menuitem"
-                            ng-repeat="feature in top_n_feature_names">
-                            <a 
-                                ng-click="pickSimilarFeature(feature)">
-                                {{feature}}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                    Unit: {{ unit_id }}
+                <br>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Feature Name</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr ng-repeat="feature in top_n_feature_names">
+                        <td>
+                            <button type="button" 
+                                ng-click="pickFeature(feature)">
+                                Examine
+                            </button>
+                        </td>
+                        <td> {{ feature }} </td>
+                        <td> {{ unit[feature] }} </td>
+                    </tr>
+                </table>    
+                <br>
                 <br>
                 <uib-tabset>
                     <uib-tab heading="Distributions">
-                        {{ unit }}<br>
                         <nvd3 options="dist.options" data="dist.data">
                         </nvd3>
-                        distribution info goes here
 
                         <br>
                     </uib-tab>
@@ -117,7 +119,7 @@
                         <table>
                             <tr>
                                 <th></th>
-                                <th>{{similar_feature}}</th>
+                                <th>{{selected_feature}}</th>
                                 <th>Unit ID</th>
                             </tr>
                             <tr ng-repeat="unit in similar_units">
@@ -126,7 +128,7 @@
                                         Examine
                                     </button>
                                 </td>
-                                <td> {{ unit[similar_feature] }} </td>
+                                <td> {{ unit[selected_feature] }} </td>
                                 <td> {{ unit.unit_id }} </td>
                             </tr>
                         </table>

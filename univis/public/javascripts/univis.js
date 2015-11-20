@@ -11,6 +11,32 @@ app.controller('univisCtrl', function($scope, $http) {
             'TPR');
     }
 
+    var updateSelectedFeature = function () {
+        feature = $scope.selected_feature;
+
+        $http.get('/similar', {'params': {
+            'model_id': $scope.model_id,
+            'unit_id': $scope.unit_id,
+            'features': feature}})
+            .then( function (response) {
+                $scope.similar_units = angular.fromJson(
+                    response.data).data;
+            }, function (response) {});
+
+        $http.get('/distribution', {'params': {
+            'model_id': $scope.model_id,
+            'feature': feature}})
+            .then( function (response) {
+                var dist = angular.fromJson(response.data).data;
+                Uniplot.distributions(
+                    $scope.dist, 
+                    dist.positive, 
+                    dist.negative,
+                    $scope.unit[feature],
+                    feature);
+            }, function (response) {});
+    }
+
     $scope.pickModel = function ($index) {
         $scope.model_id = $index;
         console.log('model id= ' + $scope.model_id);
@@ -29,6 +55,7 @@ app.controller('univisCtrl', function($scope, $http) {
                 for (var i = 0; i < 3; ++i) {
                     $scope.top_n_feature_names.push($scope.top_features[i].feature);
                 }
+                $scope.selected_feature = $scope.top_n_feature_names[0];
                 console.log('top_n_feature_names');
                 console.log($scope.top_n_feature_names);
             }, function (response) {});
@@ -46,7 +73,7 @@ app.controller('univisCtrl', function($scope, $http) {
     $scope.pickUnit = function ($index, pool) {
         if (pool === 'similar') {
             $scope.unit_id = $scope.similar_units[$index].unit_id;
-            $scope.pickSimilarFeature($scope.similar_feature);
+            $scope.pickFeature($scope.selected_feature);
         } else {
             $scope.unit_id = $scope.top_units[$index].unit_id;
         }
@@ -61,35 +88,15 @@ app.controller('univisCtrl', function($scope, $http) {
                     response.data).data;
             }, function (response) {});
         //TODO for multiple features
-        var dist_feature = $scope.top_n_feature_names[0];
-
-        $http.get('/distribution', {'params': {
-            'model_id': $scope.model_id,
-            'feature': dist_feature}})
-            .then( function (response) {
-                var dist = angular.fromJson(response.data).data;
-                Uniplot.distributions(
-                    $scope.dist, 
-                    dist.positive, 
-                    dist.negative,
-                    $scope.unit[dist_feature],
-                    dist_feature);
-            }, function (response) {});
-        
+        updateSelectedFeature();    
         $scope.open_view = 'unit_performance';
     }
 
-    $scope.pickSimilarFeature = function (feature) {
-        $scope.similar_feature = feature;
-        console.log('similar feature = ' + $scope.similar_feature);
-        $http.get('/similar', {'params': {
-            'model_id': $scope.model_id,
-            'unit_id': $scope.unit_id,
-            'features': feature}})
-            .then( function (response) {
-                $scope.similar_units = angular.fromJson(
-                    response.data).data;
-            }, function (response) {});
+
+    $scope.pickFeature = function (feature) {
+        $scope.selected_feature = feature;
+        console.log('similar feature = ' + $scope.selected_feature);
+        updateSelectedFeature();    
     }
 
     $scope.goTo = function (place) {
@@ -103,7 +110,7 @@ app.controller('univisCtrl', function($scope, $http) {
     $scope.top_n_feature_names = [];
     $scope.top_units = [];
     $scope.unit = {};
-    $scope.similar_feature = 'Choose a Feature';
+    $scope.selected_feature = 'Choose a Feature';
     $scope.similar_units = [];
     $scope.dist = {};
 
