@@ -20,8 +20,7 @@
         <div ng-app="univisApp" ng-controller="univisCtrl" ng-cloak>
             <uib-accordion close-others="false"> 
                 <uib-accordion-group 
-                    is-open="view_models_open" 
-                    >
+                    is-open="view_models_open" >
                     <uib-accordion-heading>
                         <span ng-click="goTo('models', $event)">Models</span>
                     </uib-accordion-heading>
@@ -66,7 +65,7 @@
                         <table>
                             <tr ng-repeat="(metric, score) in model_info.perf_metrics">
                                 <td> {{ metric }} </td>
-                                <td> {{ score }} </td>
+                                <td> {{ score | number : 2}} </td>
                             </tr>
                         </table>
                         <br>
@@ -96,7 +95,7 @@
                                 <td> {{ unit.score }} </td>
                                 <td> {{ unit.unit_id }} </td>
                                 <td ng-repeat="feature in top_n_feature_names">
-                                    {{ top_unit_features[unitIdx][feature] }}
+                                    {{ top_unit_features[unitIdx][feature] | number : 2}}
                                 </td>
                             </tr>
                         </table>
@@ -133,7 +132,7 @@
                             </button>
                         </td>
                         <td> {{ feature }} </td>
-                        <td> {{ unit[feature] }} </td>
+                        <td> {{ unit[feature] | number : 2}} </td>
                     </tr>
                 </table>    
                 <br>
@@ -158,7 +157,7 @@
                                         <i class="fa fa-search"></i>
                                     </button>
                                 </td>
-                                <td> {{ unit[selected_feature] }} </td>
+                                <td> {{ unit[selected_feature] | number : 2 }} </td>
                                 <td> {{ unit.unit_id }} </td>
                             </tr>
                         </table>
