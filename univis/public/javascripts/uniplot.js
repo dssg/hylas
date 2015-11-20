@@ -94,10 +94,8 @@ Uniplot.distributions = function (context, positive, negative, special_point, ti
     var data_neg = Uniplot.toData(hist_negative.centers, hist_negative.heights, 'negative');
     data_neg.type='bar';
     data_neg.yAxis = 1;
-    //var data_special = Uniplot.toData([special_point], [Math.max.apply(null, hist_all.heights)/2], 'value for unit'); 
-    var data_special = Uniplot.toData([0, 1], [0, 1], 'value for unit'); 
+    var data_special = Uniplot.toData([special_point], [Math.max.apply(null, hist_all.heights)/2], 'value for unit'); 
     data_special.type='scatter';
     data_special.yAxis = 1;
-   // context.data = [data_pos, data_neg, data_special];
-    context.data = [data_special];
+    context.data = [data_pos, data_neg, data_special];
 }
