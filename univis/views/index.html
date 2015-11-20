@@ -148,17 +148,24 @@
                         <table>
                             <tr>
                                 <th></th>
-                                <th>{{selected_feature}}</th>
+                                <th>Similarity</th>
                                 <th>Unit ID</th>
+                                <th ng-repeat="feature in top_n_feature_names" >
+                                    {{ feature }}
+                                </th>
                             </tr>
-                            <tr ng-repeat="unit in similar_units">
+                            <tr ng-repeat="unit in similar_units"
+                                ng-init="unitIdx = $index">
                                 <td> 
                                     <button type="button" ng-click="pickUnit($index, 'similar')">
                                         <i class="fa fa-search"></i>
                                     </button>
                                 </td>
-                                <td> {{ unit[selected_feature] | number : 2 }} </td>
+                                <td> {{ unit.score | number : 2 }} </td>
                                 <td> {{ unit.unit_id }} </td>
+                                <td ng-repeat="feature in top_n_feature_names">
+                                    {{ similar_unit_features[unitIdx][feature] | number : 2}}
+                                </td>
                             </tr>
                         </table>
                         <br>

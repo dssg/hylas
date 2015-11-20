@@ -28,6 +28,15 @@ app.controller('univisCtrl', function($scope, $http) {
             .then( function (response) {
                 $scope.similar_units = angular.fromJson(
                     response.data).data;
+                var similar_unit_ids = $scope.similar_units.map(
+                    function (unit) {return unit.unit_id;});
+                $http.get('/units', {'params': {
+                    'model_id': $scope.model_id,
+                    'unit_ids': similar_unit_ids.join(',')}})
+                    .then( function (response) {
+                        $scope.similar_unit_features = angular.fromJson(
+                            response.data).data;
+                    }, function (response) {});
             }, function (response) {});
 
         $http.get('/distribution', {'params': {
@@ -158,6 +167,7 @@ app.controller('univisCtrl', function($scope, $http) {
     $scope.unit = {};
     $scope.selected_feature = 'Choose a Feature';
     $scope.similar_units = [];
+    $scope.similar_unit_features = [];
     $scope.dist = {};
     $scope.model_picked = false;
     $scope.unit_picked = false;
