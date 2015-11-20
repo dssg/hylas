@@ -9,6 +9,13 @@ app.controller('univisCtrl', function($scope, $http) {
             'ROC',
             'FPR',
             'TPR');
+        Uniplot.line(
+            $scope.pr,
+            $scope.model_info.graphs.pr.recall,
+            $scope.model_info.graphs.pr.precision,
+            'Precision/Recall',
+            'recall',
+            'precision');
     }
 
     var updateSelectedFeature = function () {
@@ -133,6 +140,7 @@ app.controller('univisCtrl', function($scope, $http) {
     $scope.model_list = [];
     $scope.model_info = {};
     $scope.roc = {};
+    $scope.pr = {};
     $scope.top_features = [];
     $scope.top_n_feature_names = [];
     $scope.top_units = [];

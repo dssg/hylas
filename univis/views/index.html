@@ -49,11 +49,19 @@
                         Model Performance
                     </span>
                 </uib-accordion-heading>
-                <br>
                 <uib-tabset>
+                    <table>
+                        <tr>
+                            <td> Model Name </td>
+                            <td> {{ model_info.name }} </td>
+                        </tr>
+                        <tr>
+                            <td> Model time </td>
+                            <td> {{ model_info.time }} </td>
+                        </tr>
+                    </table>
+                    <br>
                     <uib-tab heading="Model Performance">
-                        Model Name: {{ model_info.name }}<br>
-                        Model time: {{ model_info.time }}<br>
                         <table>
                             <tr ng-repeat="(metric, score) in model_info.perf_metrics">
                                 <td> {{ metric }} </td>
@@ -62,6 +70,8 @@
                         </table>
                         <br>
                         <nvd3 options="roc.options" data="roc.data">
+                        </nvd3>
+                        <nvd3 options="pr.options" data="pr.data">
                         </nvd3>
                     </uib-tab>
                     <uib-tab heading="Top Units"> 
@@ -94,8 +104,12 @@
                         Unit Performance
                     </span>
                 </uib-accordion-heading>
-                <br>
-                    Unit: {{ unit_id }}
+                <table>
+                    <tr>
+                        <td>Unit</td>
+                        <td>{{ unit_id }}</td>
+                    </tr>
+                </table>
                 <br>
                 <table>
                     <tr>

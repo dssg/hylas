@@ -40,25 +40,27 @@ Uniplot.toData = function(x, y, key) {
 }
 
 Uniplot.line = function (context, x, y, title, xLabel, yLabel) {
-    context.data = [Uniplot.toData(x, y, 'series')];
+    context.data = [Uniplot.toData(x, y, '')];
     context.options = {
         chart: {
             type: 'lineChart',
             height: 180,
-            margin : {
-                top: 20,
-                right: 20,
-                bottom: 40,
-                left: 55
-            },
+            width: 360,
             x: function(d){ return d.x; },
             y: function(d){ return d.y; },
             xAxis: {
+                tickFormat: function(d){
+                    return d3.format('.02f')(d);
+                },
                 axisLabel: xLabel
             },
             yAxis: {
-                axislabel: yLabel
+                tickFormat: function(d){
+                    return d3.format('.02f')(d);
+                },
+                axisLabel: yLabel
             },
+            showLegend: false
         },
         title: {
             enable: true,
@@ -76,10 +78,15 @@ Uniplot.distributions = function (context, positive, negative, special_point, ti
         chart: {
             type: 'lineChart',
             height: 180,
+            width: 360,
             x: function(d){return d.x},
             y: function(d){return d.y},
             xAxis: {
-                axisLabel: 'X Axis',
+                tickFormat: function(d){
+                    return d3.format('.02f')(d);
+                }
+            },
+            yAxis: {
                 tickFormat: function(d){
                     return d3.format('.02f')(d);
                 }

@@ -9,7 +9,7 @@ from flask import request
 from flask import send_from_directory
 import numpy as np
 
-from sklearn.metrics import f1_score, roc_curve
+from sklearn.metrics import f1_score, roc_auc_score, roc_curve, precision_recall_curve
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification
@@ -52,10 +52,16 @@ def model_info():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     perf_metrics = {'f1_score' : f1_score(model['labels_test'], 
+                    model['predicted']),
+                    'roc_auc_score': roc_auc_score(model['labels_test'], 
                     model['predicted'])}
-    fpr, tpr, thresholds = roc_curve(model['labels_test'], model['pred_proba']) 
+    fpr, tpr, roc_thresholds = roc_curve(model['labels_test'], model['pred_proba']) 
+    precision, recall, pr_thresholds = precision_recall_curve(
+        model['labels_test'], model['pred_proba'])
     graphs = {'roc': {'fpr': list(fpr), 'tpr': list(tpr), 
-              'thresholds': list(thresholds)}}
+                      'thresholds': list(roc_thresholds)},
+              'pr': {'precision': list(precision), 'recall': list(recall),
+                     'thresholds': list(pr_thresholds)}}
     # TODO other perf metrics
     ret = {'model_id': model_id, 'name': model['clf_name'], 
            'time': model['time'], 'perf_metrics': perf_metrics, 
