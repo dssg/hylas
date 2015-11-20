@@ -12,6 +12,7 @@
 
         <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" />
         <link href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <link href="css/univis.css" rel="stylesheet" />
     </head>
     <body>
@@ -33,7 +34,7 @@
                         <tr ng-repeat="model in model_list">
                             <td> 
                                 <button type="button" ng-click="pickModel($index)">
-                                    Examine
+                                    <i class="fa fa-search"></i>
                                 </button>
                             </td>
                             <td> {{ model.name }} </td>
@@ -85,7 +86,7 @@
                                 <td> 
                                     <button type="button" 
                                         ng-click="pickUnit($index, 'top')">
-                                        Examine
+                                        <i class="fa fa-search"></i>
                                     </button>
                                 </td>
                                 <td> {{ unit.score }} </td>
@@ -121,7 +122,7 @@
                         <td>
                             <button type="button" 
                                 ng-click="pickFeature(feature)">
-                                Examine
+                                <i class="fa fa-search"></i>
                             </button>
                         </td>
                         <td> {{ feature }} </td>
@@ -147,7 +148,7 @@
                             <tr ng-repeat="unit in similar_units">
                                 <td> 
                                     <button type="button" ng-click="pickUnit($index, 'similar')">
-                                        Examine
+                                        <i class="fa fa-search"></i>
                                     </button>
                                 </td>
                                 <td> {{ unit[selected_feature] }} </td>
