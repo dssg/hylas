@@ -184,6 +184,10 @@ def js_path(path):
 def css_path(path):
     return send_from_directory(os.path.join('public', 'css'), path)    
 
+@app.route('/images/<path:path>', methods=['GET'])
+def image_path(path):
+    return send_from_directory(os.path.join('public', 'images'), path)    
+
 if __name__ == '__main__':
 
     # for now, build a sample model
