@@ -19,9 +19,10 @@
         <div ng-app="univisApp" ng-controller="univisCtrl" ng-cloak>
             <uib-accordion close-others="false"> 
                 <uib-accordion-group 
-                    is-open="view_models_open" >
-                    <uib-accordion-heading ng-click="goTo('models')">
-                        <div>Models</div>
+                    is-open="view_models_open" 
+                    >
+                    <uib-accordion-heading>
+                        <span ng-click="goTo('models', $event)">Models</span>
                     </uib-accordion-heading>
                     <table>
                         <tr>
@@ -40,11 +41,14 @@
                         </tr>
                     </table>
                 </uib-accordion-group>
-            <uib-accordion-group heading="Model Performance" 
-                is-open="view_model_performance_open">
-                <button type="button" ng-click="goTo('models')">
-                    back
-                </button>
+            <uib-accordion-group 
+                is-open="view_model_performance_open"
+                is-disabled="!model_picked">
+                <uib-accordion-heading>
+                    <span ng-click="goTo('model_performance', $event)">
+                        Model Performance
+                    </span>
+                </uib-accordion-heading>
                 <br>
                 <uib-tabset>
                     <uib-tab heading="Model Performance">
@@ -82,12 +86,14 @@
                     </uib-tab>
                 </uib-tabset>
             </uib-accordion-group>
-            <uib-accordion-group heading="Unit performance" 
-                is-open="view_unit_performance_open">
-                <button type="button" 
-                    ng-click="goTo('model_performance')">
-                    back
-                </button>
+            <uib-accordion-group 
+                is-open="view_unit_performance_open"
+                is-disabled="!unit_picked">
+                <uib-accordion-heading>
+                    <span ng-click="goTo('unit_performance', $event)">
+                        Unit Performance
+                    </span>
+                </uib-accordion-heading>
                 <br>
                     Unit: {{ unit_id }}
                 <br>

@@ -101,7 +101,11 @@ app.controller('univisCtrl', function($scope, $http) {
         updateSelectedFeature();    
     }
 
-    $scope.goTo = function (place) {
+    $scope.goTo = function (place, $event) {
+        if (typeof $event !== 'undefined') {
+            $event.preventDefault();
+            $event.stopPropagation();
+        }
         console.log('going to: ' + place);
         $scope.view_models_open = false;
         $scope.view_model_performance_open = false;
@@ -118,6 +122,12 @@ app.controller('univisCtrl', function($scope, $http) {
         }
         $scope.open_view = 'models'
         $scope.view_models_open = true;
+    }
+
+    $scope.views = function () {
+        console.log('models: ' + $scope.view_models_open)
+        console.log('model_performance: ' + $scope.view_model_performance_open)
+        console.log('unit_performance: ' + $scope.view_unit_performance_open)
     }
 
     $scope.model_list = [];
