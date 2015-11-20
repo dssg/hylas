@@ -52,6 +52,16 @@ app.controller('univisCtrl', function($scope, $http) {
             .then( function (response) {
                 $scope.top_units = angular.fromJson(
                     response.data).data;
+            var top_unit_ids = $scope.top_units.map(function (unit) {
+                return unit.unit_id
+            });
+            $http.get('/units', {'params':
+                {'model_id': $scope.model_id,
+                 'unit_ids': top_unit_ids.join(',')}})
+                .then( function (response) {
+                    $scope.top_unit_features = angular.fromJson(
+                        response.data).data;
+                }, function (response) {});
             }, function (response) {});
         $http.get('/top_features', {'params': 
             {'model_id' : $scope.model_id}})
@@ -144,6 +154,7 @@ app.controller('univisCtrl', function($scope, $http) {
     $scope.top_features = [];
     $scope.top_n_feature_names = [];
     $scope.top_units = [];
+    $scope.top_unit_features = [];
     $scope.unit = {};
     $scope.selected_feature = 'Choose a Feature';
     $scope.similar_units = [];

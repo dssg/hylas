@@ -81,8 +81,12 @@
                                 <th></th>
                                 <th>Score</th>
                                 <th>Unit ID</th>
+                                <th ng-repeat="feature in top_n_feature_names">
+                                    {{ feature }}
+                                </th>
                             </tr>
-                            <tr ng-repeat="unit in top_units">
+                            <!-- http://stackoverflow.com/questions/22641527/how-to-obtain-index-in-nested-ng-repeats -->
+                            <tr ng-repeat="unit in top_units" ng-init="unitIdx = $index">
                                 <td> 
                                     <button type="button" 
                                         ng-click="pickUnit($index, 'top')">
@@ -91,6 +95,9 @@
                                 </td>
                                 <td> {{ unit.score }} </td>
                                 <td> {{ unit.unit_id }} </td>
+                                <td ng-repeat="feature in top_n_feature_names">
+                                    {{ top_unit_features[unitIdx][feature] }}
+                                </td>
                             </tr>
                         </table>
                         <br>

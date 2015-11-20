@@ -113,6 +113,24 @@ def unit():
     ret = {feat: M_test[row_id, col_idx[feat]] for feat in features}
     return jsonify(data=ret)
 
+@app.route('/units', methods=['GET'])
+def units():
+    model_id = int(request.args.get('model_id', '0'))
+    model = models[model_id]
+    unit_ids = request.args.get('unit_ids')
+    unit_ids = [int(id) for id in unit_ids.split(',')]
+    features = request.args.get('features', '')
+    if not features:
+        features = model['feature_names']
+    else:
+        features = features.split(',')
+    uid_idx = model['uid_idx']
+    M_test = model['M_test']
+    col_idx = model['col_idx']
+    ret = [{feat: M_test[uid_idx[uid], col_idx[feat]] for feat in features}
+           for uid in unit_ids]
+    return jsonify(data=ret)
+
 @app.route('/distribution', methods=['GET'])
 def distribution():
     model_id = int(request.args.get('model_id', '0'))
