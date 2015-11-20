@@ -29,8 +29,6 @@ Uniplot.makeBins = function(data, options) {
 }
 
 Uniplot.toData = function(x, y, key) {
-    console.log(x);
-    console.log(y);
     var points = [];
     for (var i = 0; i < x.length; ++i) {
         points.push({

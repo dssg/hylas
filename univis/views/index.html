@@ -17,9 +17,12 @@
     <body>
 
         <div ng-app="univisApp" ng-controller="univisCtrl" ng-cloak>
-            <uib-accordion> 
-                <uib-accordion-group heading="Models" 
-                    is-open="open_view==='models'"> 
+            <uib-accordion close-others="false"> 
+                <uib-accordion-group 
+                    is-open="view_models_open" >
+                    <uib-accordion-heading ng-click="goTo('models')">
+                        <div>Models</div>
+                    </uib-accordion-heading>
                     <table>
                         <tr>
                             <th></th>
@@ -38,7 +41,7 @@
                     </table>
                 </uib-accordion-group>
             <uib-accordion-group heading="Model Performance" 
-                is-open="open_view==='model_performance'">
+                is-open="view_model_performance_open">
                 <button type="button" ng-click="goTo('models')">
                     back
                 </button>
@@ -80,7 +83,7 @@
                 </uib-tabset>
             </uib-accordion-group>
             <uib-accordion-group heading="Unit performance" 
-                is-open="open_view==='unit_performance'">
+                is-open="view_unit_performance_open">
                 <button type="button" 
                     ng-click="goTo('model_performance')">
                     back

@@ -66,7 +66,8 @@ app.controller('univisCtrl', function($scope, $http) {
                     response.data).data;
                 updateModelInfo();
             }, function (response) {});
-        $scope.open_view = 'model_performance';
+        $scope.model_picked = true;
+        $scope.goTo('model_performance');
     }
 
 
@@ -89,7 +90,8 @@ app.controller('univisCtrl', function($scope, $http) {
             }, function (response) {});
         //TODO for multiple features
         updateSelectedFeature();    
-        $scope.open_view = 'unit_performance';
+        $scope.unit_picked = true;
+        $scope.goTo('unit_performance');
     }
 
 
@@ -100,7 +102,22 @@ app.controller('univisCtrl', function($scope, $http) {
     }
 
     $scope.goTo = function (place) {
-        $scope.open_view = place;
+        console.log('going to: ' + place);
+        $scope.view_models_open = false;
+        $scope.view_model_performance_open = false;
+        $scope.view_unit_performance_open = false;
+        if (place === 'model_performance' && $scope.model_picked) {
+            $scope.open_view = 'model_performance';
+            $scope.view_model_performance_open = true;
+            return;
+        }
+        if (place === 'unit_performance' && $scope.unit_picked) {
+            $scope.open_view = 'unit_performance';
+            $scope.view_unit_performance_open = true;
+            return;
+        }
+        $scope.open_view = 'models'
+        $scope.view_models_open = true;
     }
 
     $scope.model_list = [];
@@ -113,10 +130,13 @@ app.controller('univisCtrl', function($scope, $http) {
     $scope.selected_feature = 'Choose a Feature';
     $scope.similar_units = [];
     $scope.dist = {};
+    $scope.model_picked = false;
+    $scope.unit_picked = false;
 
     $http.get('/list_models').then( function (response) {
         $scope.model_list = angular.fromJson(response.data).data;
     }, function (response) {});
 
-    $scope.open_view = 'models';
+    $scope.open_view = '';
+    $scope.goTo('models');
 });
