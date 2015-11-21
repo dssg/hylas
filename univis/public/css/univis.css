@@ -20,6 +20,9 @@ td, th {
     float: left;
 }
 
+#hylas-subtitle {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
 /* http://stackoverflow.com/questions/13732971/is-an-nvd3-line-plot-with-markers-possible */
 .dist-graph .nv-point {
     stroke-opacity: 1!important;
