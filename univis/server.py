@@ -10,9 +10,11 @@ from flask import send_from_directory
 import numpy as np
 
 from sklearn.metrics import f1_score, roc_auc_score, roc_curve, precision_recall_curve
+from sklearn.metrics.pairwise import pairwise_distances
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification
+from sklearn.preprocessing import normalize
 
 from diogenes.display import get_top_features
 
@@ -22,11 +24,16 @@ def register_model(fitted_clf, time, M_train, M_test, labels_train,
                    labels_test, feature_names, uid_feature):
     col_idx = {col_name: idx for idx, col_name in 
                     enumerate(feature_names)}
+    # TODO better distance metric
+    norm_M_test = normalize(M_test)
+    distances = pairwise_distances(norm_M_test)
     models.append({
         'clf': fitted_clf, 
         'time': time, 
         'M_train': M_train,
         'M_test': M_test, 
+        'norm_M_test': norm_M_test,
+        'distances': distances,
         'labels_train': labels_train,
         'labels_test': labels_test, 
         'feature_names': feature_names,
@@ -147,24 +154,22 @@ def distribution():
 def similar():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
-    unit_id = float(request.args.get('unit_id'))
-    features = request.args.get('features').split(',')
+    unit_id = int(request.args.get('unit_id'))
+    features = request.args.get('features', '').split(',')
     n = int(request.args.get('n', '10'))
-
-    # TODO similarity based on more than just the first feature in the list
-    feature = features[0]
-
     M_test = model['M_test']
-    target_col = M_test[:, model['col_idx'][feature]]
+    uid_idx = model['uid_idx']
+    col_idx = model['col_idx']
+    distances = model['distances']
+    
     uid_col = M_test[:, model['col_idx'][model['uid_feature']]]
-    target_val = target_col[model['uid_idx'][unit_id]]
-    error = np.sqrt((target_col - target_val) ** 2)
-    top_idxs = np.argsort(error)[:n]
+    distances_from_uid = distances[:,uid_idx[unit_id]]
+    scores = 1 - distances_from_uid / max(distances_from_uid)
+    top_idxs = np.argsort(scores)[::-1][:n]
     top_uids = uid_col[top_idxs]
-    top_vals = target_col[top_idxs]
-    top_scores = (1 - error / np.linalg.norm(error))[top_idxs]
-    ret = [{'unit_id': uid, 'score': score, feature: val} for uid, val, score in
-            zip(top_uids, top_vals, top_scores)]
+    top_scores = scores[top_idxs]
+    ret = [{'unit_id': uid, 'score': score} for uid, score in
+            zip(top_uids, top_scores)]
     return jsonify(data=ret)
     
 @app.route('/debug', methods=['GET'])

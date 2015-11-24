@@ -23,8 +23,7 @@ app.controller('univisCtrl', function($scope, $http) {
 
         $http.get('/similar', {'params': {
             'model_id': $scope.model_id,
-            'unit_id': $scope.unit_id,
-            'features': feature}})
+            'unit_id': $scope.unit_id}})
             .then( function (response) {
                 $scope.similar_units = angular.fromJson(
                     response.data).data;
