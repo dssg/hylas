@@ -1,4 +1,4 @@
-var app = angular.module('univisApp', ['ui.bootstrap', 'nvd3']);
+var app = angular.module('univisApp', ['ngAnimate', 'ui.bootstrap', 'nvd3']);
 app.controller('univisCtrl', function($scope, $http) {
 
     var updateModelInfo = function() {
