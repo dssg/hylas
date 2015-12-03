@@ -56,8 +56,6 @@ app.controller('univisCtrl', ['$scope', '$http', 'dataservice',
     $scope.pickModel = function ($index) {
         $scope.model_id = $index;
         console.log('model id= ' + $scope.model_id);
-        $scope.top_units = dataservice.getTopUnits($scope.model_id);
-        //TODO what goes here exactly?
         $http.get('/top_units', {'params': 
             {'model_id' : $scope.model_id}})
             .then( function (response) {
