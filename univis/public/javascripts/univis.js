@@ -1,5 +1,6 @@
-var app = angular.module('univisApp', ['ngAnimate', 'ui.bootstrap', 'nvd3']);// 'dataservice']);
-app.controller('univisCtrl', function($scope, $http) {
+var app = angular.module('univisApp', ['ngAnimate', 'ui.bootstrap', 'nvd3']);
+app.controller('univisCtrl', ['$scope', '$http', 'dataservice', 
+        function($scope, $http, dataservice) {
 
     var updateModelInfo = function() {
         Uniplot.line(
@@ -177,4 +178,4 @@ app.controller('univisCtrl', function($scope, $http) {
 
     $scope.open_view = '';
     $scope.goTo('models');
-});
+}]);

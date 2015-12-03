@@ -1,6 +1,6 @@
 (function () {
     angular.module('univisApp')
-        .factory('dataservice', dataservice);
+        .factory('dataservice', ['$http', dataservice]);
 
     function dataservice($http) {
 
