@@ -172,9 +172,9 @@ app.controller('univisCtrl', ['$scope', '$http', 'dataservice',
     $scope.model_picked = false;
     $scope.unit_picked = false;
 
-    $http.get('/list_models').then( function (response) {
-        $scope.model_list = angular.fromJson(response.data).data;
-    }, function (response) {});
+    dataservice.getListModels().then(function (data) {
+        $scope.model_list = data;
+    });
 
     $scope.open_view = '';
     $scope.goTo('models');

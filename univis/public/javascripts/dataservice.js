@@ -11,15 +11,19 @@
             getDistribution: getDistribution,
             getTopUnits: getTopUnits,
             getTopFeatures: getTopFeatures,
-            getModelInfo: getModelInfo
+            getModelInfo: getModelInfo,
+            getListModels: getListModels
         };
 
         return service;
 
         function getRest(resource, params) {
-            $http.get(resource, {params: params})
+            console.log(resource, params);
+            return $http.get(resource, {params: params})
                 .then(function(response) {
-                    return angular.fromJson(response.data).data;
+                    var data = angular.fromJson(response.data).data;
+                    console.log(data);
+                    return data;
                 })
                 .catch(function(response) {
                     //TODO don't just eat the error
@@ -73,6 +77,10 @@
                 model_id: modelId
             });
         } 
+
+        function getListModels() {
+            return getRest('/list_models', {});
+        }
     }
 })();                
 
