@@ -22,6 +22,9 @@ models = []
 
 def register_model(fitted_clf, time, M_train, M_test, labels_train, 
                    labels_test, feature_names, uid_feature):
+    # M_train, etc. are numpy array
+    # feature names is names of colums
+    # uid_feature is the name of the column that has the unique id
     col_idx = {col_name: idx for idx, col_name in 
                     enumerate(feature_names)}
     # TODO better distance metric
