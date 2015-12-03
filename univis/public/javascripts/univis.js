@@ -106,14 +106,13 @@ app.controller('univisCtrl', ['$scope', '$http', 'dataservice',
         }
         console.log('unit id= ' + $scope.unit_id);
         var feature_list = $scope.top_n_feature_names.join(',');
-        $http.get('/unit', {'params': {
-            'model_id': $scope.model_id,
-            'unit_id': $scope.unit_id,
-            'features': feature_list}})
-            .then( function (response) {
-                $scope.unit = angular.fromJson(
-                    response.data).data;
-            }, function (response) {});
+        dataservice.getUnit(
+                $scope.model_id, 
+                $scope.unit_id, 
+                $scope.top_n_feature_names)
+            .then(function (data) {
+                $scope.unit = data;
+            });
         //TODO for multiple features
         updateSelectedFeature();    
         $scope.unit_picked = true;
