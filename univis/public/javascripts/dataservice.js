@@ -1,11 +1,12 @@
-
-angular.module('univisApp')
-    .factory('dataservice', dataservice);
+(function () {
+    angular.module('univisApp')
+        .factory('dataservice', dataservice);
 
     function dataservice($http) {
 
         var service = {
             getSimilar: getSimilar,
+            getUnit: getUnit,
             getUnits: getUnits,
             getDistribution: getDistribution,
             getTopUnits: getTopUnits,
@@ -27,5 +28,51 @@ angular.module('univisApp')
         }
 
         function getSimilar(modelId, unitId) {
-            //TODO here
+            return getRest('/similar', {
+                model_id: modelId,
+                unit_id: unitId
+            });
         }
+
+        function getUnits(modelId, unitIds) {
+            return getRest('/units', {
+                model_id: modelId,
+                unit_id: unitIds.join(',')
+            });
+        }
+
+        function getUnit(modelId, unitId, features) {
+            return getRest('/unit', {
+                model_id: modelId,
+                unitId: unitId,
+                features: features.join(',')
+            });
+        }
+
+        function getDistribution(modelId, feature) {
+            return getRest('/distribution', {
+                model_id: modelId,
+                feature: feature
+            });
+        }
+
+        function getTopUnits(modelId) {
+            return getRest('/top_units', {
+                model_id: modelId
+            });
+        }
+
+        function getTopFeatures(modelId) {
+            return getRest('/top_features', {
+                model_id: modelId
+            });
+        }
+
+        function getModelInfo(modelId) {
+            return getRest('/model_info', {
+                model_id: modelId
+            });
+        } 
+    }
+})();                
+
