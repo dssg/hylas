@@ -45,8 +45,74 @@
                 });
         }
 
+
         $scope.pickModel = function ($index) {
             $scope.model_id = $index;
+            $scope.open_view='model_performance';
+        }
+
+        $scope.pickUnit = function ($index, pool) {
+            if (pool === 'similar') {
+                $scope.unit_id = $scope.similar_units[$index].unit_id;
+                $scope.pickFeature($scope.selected_feature);
+            } else {
+                $scope.unit_id = $scope.top_units[$index].unit_id;
+            }
+            console.log('unit id= ' + $scope.unit_id);
+            var feature_list = $scope.top_n_feature_names.join(',');
+            dataservice.getUnit(
+                    $scope.model_id, 
+                    $scope.unit_id, 
+                    $scope.top_n_feature_names)
+                .then(function (data) {
+                    $scope.unit = data;
+                });
+            //TODO for multiple features
+            updateSelectedFeature();    
+            $scope.unit_picked = true;
+            $scope.open_view = 'unit_performance';
+        }
+
+
+        $scope.pickFeature = function (feature) {
+            $scope.selected_feature = feature;
+            console.log('similar feature = ' + $scope.selected_feature);
+            updateSelectedFeature();    
+        }
+
+        $scope.$watch('open_view', function (new_value) {
+            var place = new_value;
+            console.log('going to: ' + place);
+            $scope.view_models_open = false;
+            $scope.view_model_performance_open = false;
+            $scope.view_unit_performance_open = false;
+            if (place === 'model_performance') {
+                $scope.view_model_performance_open = true;
+                return;
+            }
+            if (place === 'unit_performance') {
+                $scope.view_unit_performance_open = true;
+                return;
+            }
+            $scope.view_models_open = true;
+        });
+
+        $scope.goTo = function (place, $event) {
+            if (typeof $event !== 'undefined') {
+                $event.preventDefault();
+                $event.stopPropagation();
+                if (place === 'model_performance' && !$scope.model_picked) {
+                    return;
+                }
+                if (place === 'unit_performance' && !$scope.unit_picked) {
+                    return;
+                }
+            }
+            $scope.open_view = place
+        }
+
+        $scope.$watch('model_id', function (new_value) {
+            if (new_value === undefined) return;
             console.log('model id= ' + $scope.model_id);
             dataservice.getTopUnits($scope.model_id)
                 .then( function (data) {
@@ -76,67 +142,7 @@
                     updateModelInfo();
                 });
             $scope.model_picked = true;
-            $scope.goTo('model_performance');
-        }
-
-
-        $scope.pickUnit = function ($index, pool) {
-            if (pool === 'similar') {
-                $scope.unit_id = $scope.similar_units[$index].unit_id;
-                $scope.pickFeature($scope.selected_feature);
-            } else {
-                $scope.unit_id = $scope.top_units[$index].unit_id;
-            }
-            console.log('unit id= ' + $scope.unit_id);
-            var feature_list = $scope.top_n_feature_names.join(',');
-            dataservice.getUnit(
-                    $scope.model_id, 
-                    $scope.unit_id, 
-                    $scope.top_n_feature_names)
-                .then(function (data) {
-                    $scope.unit = data;
-                });
-            //TODO for multiple features
-            updateSelectedFeature();    
-            $scope.unit_picked = true;
-            $scope.goTo('unit_performance');
-        }
-
-
-        $scope.pickFeature = function (feature) {
-            $scope.selected_feature = feature;
-            console.log('similar feature = ' + $scope.selected_feature);
-            updateSelectedFeature();    
-        }
-
-        $scope.goTo = function (place, $event) {
-            if (typeof $event !== 'undefined') {
-                $event.preventDefault();
-                $event.stopPropagation();
-            }
-            console.log('going to: ' + place);
-            $scope.view_models_open = false;
-            $scope.view_model_performance_open = false;
-            $scope.view_unit_performance_open = false;
-            if (place === 'model_performance' && $scope.model_picked) {
-                $scope.open_view = 'model_performance';
-                $scope.view_model_performance_open = true;
-                return;
-            }
-            if (place === 'unit_performance' && $scope.unit_picked) {
-                $scope.open_view = 'unit_performance';
-                $scope.view_unit_performance_open = true;
-                return;
-            }
-            $scope.open_view = 'models'
-            $scope.view_models_open = true;
-        }
-
-        $scope.views = function () {
-            console.log('models: ' + $scope.view_models_open)
-            console.log('model_performance: ' + $scope.view_model_performance_open)
-            console.log('unit_performance: ' + $scope.view_unit_performance_open)
-        }
+        });
 
         $scope.model_list = [];
         $scope.model_info = {};
@@ -158,7 +164,7 @@
             $scope.model_list = data;
         });
 
-        $scope.open_view = '';
-        $scope.goTo('models');
+        $scope.open_view = 'models';
+
     }]);
 })();
