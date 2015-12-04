@@ -8,8 +8,8 @@
         $scope.unit_id = undefined;
         $scope.open_view = undefined;
         $scope.selected_feature = undefined;
+        $scope.model_info = undefined;
         $scope.model_list = [];
-        $scope.model_info = {};
         $scope.roc = {};
         $scope.pr = {};
         $scope.top_features = [];
@@ -17,7 +17,6 @@
         $scope.top_units = [];
         $scope.top_unit_features = [];
         $scope.unit = {};
-        $scope.selected_feature = 'Choose a Feature';
         $scope.similar_units = [];
         $scope.similar_unit_features = [];
         $scope.dist = {};
@@ -25,11 +24,10 @@
         $scope.unit_picked = false;
 
         $scope.$watch('model_id', updateModel);
-        $scope.$watch('unit_id', updateUnit);
-        $scope.$watch('open_view', updateView);
-        $scope.$watch('selected_feature', updateFeature);
-
         $scope.$watch('model_info', updateModelInfo);
+        $scope.$watch('unit_id', updateUnit);
+        $scope.$watch('selected_feature', updateFeature);
+        $scope.$watch('open_view', updateView);
 
         dataservice.getListModels().then(function (data) {
             $scope.model_list = data;
@@ -38,49 +36,7 @@
         $scope.open_view = 'models';
 
         // functions
-        function updateModelInfo(new_value) {
-            uniplot.line(
-                $scope.roc,
-                $scope.model_info.graphs.roc.fpr,
-                $scope.model_info.graphs.roc.tpr,
-                'ROC',
-                'FPR',
-                'TPR');
-            uniplot.line(
-                $scope.pr,
-                $scope.model_info.graphs.pr.recall,
-                $scope.model_info.graphs.pr.precision,
-                'Precision/Recall',
-                'recall',
-                'precision');
-        }
-
-        function updateFeature(new_value) {
-            feature = new_value;
-            console.log('feature = ' + feature);
-            dataservice.getSimilar($scope.model_id, $scope.unit_id)
-                .then( function (data) {
-                    $scope.similar_units = data;
-                    var similar_unit_ids = $scope.similar_units.map(
-                        function (unit) {return unit.unit_id;});
-                    dataservice.getUnits($scope.model_id, similar_unit_ids)
-                        .then( function (data) {
-                            $scope.similar_unit_features = data;
-                        });
-                });
-            dataservice.getDistribution($scope.model_id, feature)
-                .then( function (data) {
-                    $scope.dist = data;
-                    uniplot.distributions(
-                        $scope.dist, 
-                        $scope.dist.positive, 
-                        $scope.dist.negative,
-                        $scope.unit[feature],
-                        feature);
-                });
-        }
-
-        var updateModel = function(new_value) {
+        function updateModel(new_value) {
             if (new_value === undefined) return;
             console.log('model id= ' + $scope.model_id);
             dataservice.getTopUnits($scope.model_id)
@@ -108,12 +64,30 @@
             dataservice.getModelInfo($scope.model_id)
                 .then( function (data) {
                     $scope.model_info = data;
-                    updateModelInfo();
                 });
             $scope.model_picked = true;
         }
 
-        var updateUnit = function(new_value) {
+        function updateModelInfo(new_value) {
+            if (new_value === undefined) return;
+            uniplot.line(
+                $scope.roc,
+                $scope.model_info.graphs.roc.fpr,
+                $scope.model_info.graphs.roc.tpr,
+                'ROC',
+                'FPR',
+                'TPR');
+            uniplot.line(
+                $scope.pr,
+                $scope.model_info.graphs.pr.recall,
+                $scope.model_info.graphs.pr.precision,
+                'Precision/Recall',
+                'recall',
+                'precision');
+        }
+
+        function updateUnit(new_value) {
+            if (new_value === undefined) return;
             console.log('unit id= ' + $scope.unit_id);
             var feature_list = $scope.top_n_feature_names.join(',');
             dataservice.getUnit(
@@ -128,7 +102,35 @@
             $scope.unit_picked = true;
         }
 
-        var updateView = function(new_value) {
+        function updateFeature(new_value) {
+            if (new_value === undefined) return;
+            feature = new_value;
+            console.log('feature = ' + feature);
+            dataservice.getDistribution($scope.model_id, feature)
+                .then( function (data) {
+                    $scope.dist = data;
+                    uniplot.distributions(
+                        $scope.dist, 
+                        $scope.dist.positive, 
+                        $scope.dist.negative,
+                        $scope.unit[feature],
+                        feature);
+                });
+            if ($scope.unit_id === undefined) return;
+            dataservice.getSimilar($scope.model_id, $scope.unit_id)
+                .then( function (data) {
+                    $scope.similar_units = data;
+                    var similar_unit_ids = $scope.similar_units.map(
+                        function (unit) {return unit.unit_id;});
+                    dataservice.getUnits($scope.model_id, similar_unit_ids)
+                        .then( function (data) {
+                            $scope.similar_unit_features = data;
+                        });
+                });
+        }
+
+        function updateView(new_value) {
+            if (new_value === undefined) return;
             var place = new_value;
             console.log('going to: ' + place);
             $scope.view_models_open = false;
@@ -162,7 +164,6 @@
 
         $scope.pickFeature = function (feature) {
             $scope.selected_feature = feature;
-            updateSelectedFeature();    
         }
 
 
