@@ -22,12 +22,12 @@
             return $http.get(resource, {params: params})
                 .then(function(response) {
                     var data = angular.fromJson(response.data).data;
-                    console.log('got:', data);
+                    console.log('got for ' + resource + ':', data);
                     return data;
                 })
                 .catch(function(response) {
                     //TODO don't just eat the error
-                    console.log('request failed', response);
+                    console.log('REQUEST FAILED', response);
                     return 'ERROR'
                 });
         }
@@ -49,7 +49,7 @@
         function getUnit(modelId, unitId, features) {
             return getRest('/unit', {
                 model_id: modelId,
-                unitId: unitId,
+                unit_id: unitId,
                 features: features.join(',')
             });
         }

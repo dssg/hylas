@@ -67,24 +67,6 @@ app.controller('univisCtrl', ['$scope', '$http', 'dataservice',
                         $scope.top_unit_features = data;
                     });
             });   
-    /*
-        $http.get('/top_units', {'params': 
-            {'model_id' : $scope.model_id}})
-            .then( function (response) {
-                $scope.top_units = angular.fromJson(
-                    response.data).data;
-            var top_unit_ids = $scope.top_units.map(function (unit) {
-                return unit.unit_id
-            });
-            $http.get('/units', {'params':
-                {'model_id': $scope.model_id,
-                 'unit_ids': top_unit_ids.join(',')}})
-                .then( function (response) {
-                    $scope.top_unit_features = angular.fromJson(
-                        response.data).data;
-                }, function (response) {});
-            }, function (response) {});
-            */
         dataservice.getTopFeatures($scope.model_id)
             .then( function (data) {
                 $scope.top_features = data;
@@ -96,34 +78,11 @@ app.controller('univisCtrl', ['$scope', '$http', 'dataservice',
                 console.log('top_n_feature_names');
                 console.log($scope.top_n_feature_names);
             });
-        /*
-        $http.get('/top_features', {'params': 
-            {'model_id' : $scope.model_id}})
-            .then( function (response) {
-                $scope.top_features = angular.fromJson(
-                    response.data).data;
-                $scope.top_n_feature_names.length = 0;
-                for (var i = 0; i < 3; ++i) {
-                    $scope.top_n_feature_names.push($scope.top_features[i].feature);
-                }
-                $scope.selected_feature = $scope.top_n_feature_names[0];
-                console.log('top_n_feature_names');
-                console.log($scope.top_n_feature_names);
-            }, function (response) {});
-        */
         dataservice.getModelInfo($scope.model_id)
             .then( function (data) {
                 $scope.model_info = data;
-            });
-        /*
-        $http.get('/model_info', {'params':
-            {'model_id': $scope.model_id}})
-            .then( function (response) {
-                $scope.model_info = angular.fromJson(
-                    response.data).data;
                 updateModelInfo();
-            }, function (response) {});
-        */
+            });
         $scope.model_picked = true;
         $scope.goTo('model_performance');
     }
