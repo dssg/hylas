@@ -1,16 +1,16 @@
 var app = angular.module('univisApp', ['ngAnimate', 'ui.bootstrap', 'nvd3']);
-app.controller('univisCtrl', ['$scope', 'dataservice', 
-        function($scope, dataservice) {
+app.controller('univisCtrl', ['$scope', 'dataservice', 'uniplot',
+        function($scope, dataservice, uniplot) {
 
     var updateModelInfo = function() {
-        Uniplot.line(
+        uniplot.line(
             $scope.roc,
             $scope.model_info.graphs.roc.fpr,
             $scope.model_info.graphs.roc.tpr,
             'ROC',
             'FPR',
             'TPR');
-        Uniplot.line(
+        uniplot.line(
             $scope.pr,
             $scope.model_info.graphs.pr.recall,
             $scope.model_info.graphs.pr.precision,
@@ -35,7 +35,7 @@ app.controller('univisCtrl', ['$scope', 'dataservice',
         dataservice.getDistribution($scope.model_id, feature)
             .then( function (data) {
                 $scope.dist = data;
-                Uniplot.distributions(
+                uniplot.distributions(
                     $scope.dist, 
                     $scope.dist.positive, 
                     $scope.dist.negative,
