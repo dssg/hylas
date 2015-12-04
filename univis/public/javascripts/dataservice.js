@@ -18,15 +18,16 @@
         return service;
 
         function getRest(resource, params) {
-            console.log(resource, params);
+            console.log('fetching from host:', resource, params);
             return $http.get(resource, {params: params})
                 .then(function(response) {
                     var data = angular.fromJson(response.data).data;
-                    console.log(data);
+                    console.log('got:', data);
                     return data;
                 })
                 .catch(function(response) {
                     //TODO don't just eat the error
+                    console.log('request failed', response);
                     return 'ERROR'
                 });
         }
@@ -41,7 +42,7 @@
         function getUnits(modelId, unitIds) {
             return getRest('/units', {
                 model_id: modelId,
-                unit_id: unitIds.join(',')
+                unit_ids: unitIds.join(',')
             });
         }
 
