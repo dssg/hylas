@@ -1,6 +1,6 @@
 var app = angular.module('univisApp', ['ngAnimate', 'ui.bootstrap', 'nvd3']);
-app.controller('univisCtrl', ['$scope', '$http', 'dataservice', 
-        function($scope, $http, dataservice) {
+app.controller('univisCtrl', ['$scope', 'dataservice', 
+        function($scope, dataservice) {
 
     var updateModelInfo = function() {
         Uniplot.line(
@@ -22,35 +22,26 @@ app.controller('univisCtrl', ['$scope', '$http', 'dataservice',
     var updateSelectedFeature = function () {
         feature = $scope.selected_feature;
 
-        $http.get('/similar', {'params': {
-            'model_id': $scope.model_id,
-            'unit_id': $scope.unit_id}})
-            .then( function (response) {
-                $scope.similar_units = angular.fromJson(
-                    response.data).data;
+        dataservice.getSimilar($scope.model_id, $scope.unit_id)
+            .then( function (data) {
+                $scope.similar_units = data;
                 var similar_unit_ids = $scope.similar_units.map(
                     function (unit) {return unit.unit_id;});
-                $http.get('/units', {'params': {
-                    'model_id': $scope.model_id,
-                    'unit_ids': similar_unit_ids.join(',')}})
-                    .then( function (response) {
-                        $scope.similar_unit_features = angular.fromJson(
-                            response.data).data;
-                    }, function (response) {});
-            }, function (response) {});
-
-        $http.get('/distribution', {'params': {
-            'model_id': $scope.model_id,
-            'feature': feature}})
-            .then( function (response) {
-                var dist = angular.fromJson(response.data).data;
+                dataservice.getUnits($scope.model_id, similar_unit_ids)
+                    .then( function (data) {
+                        $scope.similar_unit_features = data;
+                    });
+            });
+        dataservice.getDistribution($scope.model_id, feature)
+            .then( function (data) {
+                $scope.dist = data;
                 Uniplot.distributions(
                     $scope.dist, 
-                    dist.positive, 
-                    dist.negative,
+                    $scope.dist.positive, 
+                    $scope.dist.negative,
                     $scope.unit[feature],
                     feature);
-            }, function (response) {});
+            });
     }
 
     $scope.pickModel = function ($index) {
