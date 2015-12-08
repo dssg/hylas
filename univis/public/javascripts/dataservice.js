@@ -19,6 +19,11 @@
 
         function getRest(resource, params) {
             console.log('fetching from host:', resource, params);
+            for (var key in params) {
+                if (params.hasOwnProperty(key)) {
+                    // todo return failed request
+                }
+            }
             return $http.get(resource, {params: params})
                 .then(function(response) {
                     var data = angular.fromJson(response.data).data;

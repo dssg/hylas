@@ -4,10 +4,13 @@
             function($scope, dataservice, uniplot) {
 
         // initialization
+        // These uniquely define state
         $scope.model_id = undefined;
         $scope.unit_id = undefined;
         $scope.open_view = undefined;
         $scope.selected_feature = undefined;
+
+        // These set from the server
         $scope.model_info = undefined;
         $scope.model_list = [];
         $scope.roc = {};
@@ -58,8 +61,6 @@
                         $scope.top_n_feature_names.push($scope.top_features[i].feature);
                     }
                     $scope.selected_feature = $scope.top_n_feature_names[0];
-                    console.log('top_n_feature_names');
-                    console.log($scope.top_n_feature_names);
                 });
             dataservice.getModelInfo($scope.model_id)
                 .then( function (data) {
@@ -98,13 +99,24 @@
                     $scope.unit = data;
                 });
             //TODO for multiple features
-            updateSelectedFeature();    
+            //updateFeature($scope.selected_feature);    
+            dataservice.getSimilar($scope.model_id, $scope.unit_id)
+                .then( function (data) {
+                    $scope.similar_units = data;
+                    var similar_unit_ids = $scope.similar_units.map(
+                        function (unit) {return unit.unit_id;});
+                    dataservice.getUnits($scope.model_id, similar_unit_ids)
+                        .then( function (data) {
+                            $scope.similar_unit_features = data;
+                        });
+                        //updateFeature($scope.selected_feature);
+                });
             $scope.unit_picked = true;
         }
 
         function updateFeature(new_value) {
             if (new_value === undefined) return;
-            feature = new_value;
+            var feature = new_value;
             console.log('feature = ' + feature);
             dataservice.getDistribution($scope.model_id, feature)
                 .then( function (data) {
@@ -115,17 +127,6 @@
                         $scope.dist.negative,
                         $scope.unit[feature],
                         feature);
-                });
-            if ($scope.unit_id === undefined) return;
-            dataservice.getSimilar($scope.model_id, $scope.unit_id)
-                .then( function (data) {
-                    $scope.similar_units = data;
-                    var similar_unit_ids = $scope.similar_units.map(
-                        function (unit) {return unit.unit_id;});
-                    dataservice.getUnits($scope.model_id, similar_unit_ids)
-                        .then( function (data) {
-                            $scope.similar_unit_features = data;
-                        });
                 });
         }
 
