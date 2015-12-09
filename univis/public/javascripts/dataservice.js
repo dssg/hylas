@@ -31,9 +31,8 @@
                     return data;
                 })
                 .catch(function(response) {
-                    //TODO don't just eat the error
                     console.log('REQUEST FAILED', response);
-                    return 'ERROR'
+                    return response;
                 });
         }
 

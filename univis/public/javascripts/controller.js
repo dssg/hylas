@@ -42,27 +42,29 @@
         function updateModel(new_value) {
             if (new_value === undefined) return;
             console.log('model id= ' + $scope.model_id);
-            dataservice.getTopUnits($scope.model_id)
-                .then( function (data) {
-                    $scope.top_units = data;
-                    var top_unit_ids = $scope.top_units.map(function (unit) {
-                        return unit.unit_id
-                    });
-                    dataservice.getUnits($scope.model_id, top_unit_ids)
-                        .then( function (data) {
-                            $scope.top_unit_features = data;
-                        });
-                });   
             dataservice.getTopFeatures($scope.model_id)
                 .then( function (data) {
                     $scope.top_features = data;
                     $scope.top_n_feature_names.length = 0;
                     for (var i = 0; i < 3; ++i) {
-                        $scope.top_n_feature_names.push($scope.top_features[i].feature);
+                        $scope.top_n_feature_names.push(
+                            $scope.top_features[i].feature);
                     }
-                    $scope.selected_feature = $scope.top_n_feature_names[0];
-                });
-            dataservice.getModelInfo($scope.model_id)
+                    // TODO figure out when to do this
+                    //$scope.selected_feature = $scope.top_n_feature_names[0];
+                    return dataservice.getTopUnits($scope.model_id);
+                })
+                .then( function (data) {
+                    $scope.top_units = data;
+                    var top_unit_ids = $scope.top_units.map(function (unit) {
+                        return unit.unit_id
+                    });
+                    return dataservice.getUnits($scope.model_id, top_unit_ids);
+                })   
+                .then( function (data) {
+                    $scope.top_unit_features = data;
+                    return dataservice.getModelInfo($scope.model_id)
+                })
                 .then( function (data) {
                     $scope.model_info = data;
                 });
@@ -105,11 +107,13 @@
                     $scope.similar_units = data;
                     var similar_unit_ids = $scope.similar_units.map(
                         function (unit) {return unit.unit_id;});
-                    dataservice.getUnits($scope.model_id, similar_unit_ids)
-                        .then( function (data) {
-                            $scope.similar_unit_features = data;
-                        });
+                    return dataservice.getUnits(
+                        $scope.model_id, 
+                        similar_unit_ids);
                         //updateFeature($scope.selected_feature);
+                })
+                .then( function (data) {
+                    $scope.similar_unit_features = data;
                 });
             $scope.unit_picked = true;
         }
