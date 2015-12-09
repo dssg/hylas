@@ -50,8 +50,6 @@
                         $scope.top_n_feature_names.push(
                             $scope.top_features[i].feature);
                     }
-                    // TODO figure out when to do this
-                    //$scope.selected_feature = $scope.top_n_feature_names[0];
                     return dataservice.getTopUnits($scope.model_id);
                 })
                 .then( function (data) {
@@ -99,6 +97,7 @@
                     $scope.top_n_feature_names)
                 .then(function (data) {
                     $scope.unit = data;
+                    $scope.selected_feature = $scope.top_n_feature_names[0];
                 });
             //TODO for multiple features
             //updateFeature($scope.selected_feature);    
@@ -110,7 +109,6 @@
                     return dataservice.getUnits(
                         $scope.model_id, 
                         similar_unit_ids);
-                        //updateFeature($scope.selected_feature);
                 })
                 .then( function (data) {
                     $scope.similar_unit_features = data;
