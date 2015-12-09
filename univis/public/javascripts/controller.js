@@ -97,10 +97,13 @@
                     $scope.top_n_feature_names)
                 .then(function (data) {
                     $scope.unit = data;
-                    $scope.selected_feature = $scope.top_n_feature_names[0];
+                    if ($scope.selected_feature === undefined) {
+                        $scope.selected_feature = $scope.top_n_feature_names[0];
+                    } else {
+                        updateFeature($scope.selected_feature);    
+                    }
                 });
             //TODO for multiple features
-            //updateFeature($scope.selected_feature);    
             dataservice.getSimilar($scope.model_id, $scope.unit_id)
                 .then( function (data) {
                     $scope.similar_units = data;
