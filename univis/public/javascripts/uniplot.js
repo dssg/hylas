@@ -113,6 +113,7 @@
             }
             var data_pos = toData(hist_positive.centers, hist_positive.heights, 'positive');
             var data_neg = toData(hist_negative.centers, hist_negative.heights, 'negative');
+            console.log('UNIPLOT::::::::: ' + special_point);
             var data_special = toData([special_point], [1], 'value for unit'); 
             context.data = [data_pos, data_neg, data_special];
         }
