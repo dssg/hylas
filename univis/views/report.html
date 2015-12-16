@@ -1,0 +1,155 @@
+<div >
+    <uib-accordion close-others="false"> 
+        <uib-accordion-group 
+            is-open="view_models_open" >
+            <uib-accordion-heading>
+                <span ng-click="goTo('models', $event)">Models</span>
+            </uib-accordion-heading>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>Classifier Name</th>
+                    <th>Time</th>
+                </tr>
+                <tr ng-repeat="model in model_list">
+                    <td> 
+                        <button type="button" ng-click="pickModel($index)">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </td>
+                    <td> {{ model.name }} </td>
+                    <td> {{ model.time }} </td>
+                </tr>
+            </table>
+        </uib-accordion-group>
+    <uib-accordion-group 
+        is-open="view_model_performance_open">
+        <uib-accordion-heading>
+            <span ng-click="goTo('model_performance', $event)">
+                Model Performance
+            </span>
+        </uib-accordion-heading>
+        <uib-tabset>
+            <table>
+                <tr>
+                    <td> Model Name </td>
+                    <td> {{ model_info.name }} </td>
+                </tr>
+                <tr>
+                    <td> Model time </td>
+                    <td> {{ model_info.time }} </td>
+                </tr>
+            </table>
+            <br>
+            <uib-tab heading="Model Performance">
+                <table>
+                    <tr ng-repeat="(metric, score) in model_info.perf_metrics">
+                        <td> {{ metric }} </td>
+                        <td> {{ score | number : 2}} </td>
+                    </tr>
+                </table>
+                <br>
+                <nvd3 options="roc.options" data="roc.data">
+                </nvd3>
+                <nvd3 options="pr.options" data="pr.data">
+                </nvd3>
+            </uib-tab>
+            <uib-tab heading="Top Units"> 
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Score</th>
+                        <th>Unit ID</th>
+                        <th ng-repeat="feature in top_n_feature_names">
+                            {{ feature }}
+                        </th>
+                    </tr>
+                    <!-- http://stackoverflow.com/questions/22641527/how-to-obtain-index-in-nested-ng-repeats -->
+                    <tr ng-repeat="unit in top_units" ng-init="unitIdx = $index">
+                        <td> 
+                            <button type="button" 
+                                ng-click="pickUnit($index, 'top')">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </td>
+                        <td> {{ unit.score }} </td>
+                        <td> {{ unit.unit_id }} </td>
+                        <td ng-repeat="feature in top_n_feature_names">
+                            {{ top_unit_features[unitIdx][feature] | number : 2}}
+                        </td>
+                    </tr>
+                </table>
+                <br>
+            </uib-tab>
+        </uib-tabset>
+    </uib-accordion-group>
+    <uib-accordion-group 
+        is-open="view_unit_performance_open">
+        <uib-accordion-heading>
+            <span ng-click="goTo('unit_performance', $event)">
+                Unit Performance
+            </span>
+        </uib-accordion-heading>
+        <table>
+            <tr>
+                <td>Unit</td>
+                <td>{{ unit_id }}</td>
+            </tr>
+        </table>
+        <br>
+        <table>
+            <tr>
+                <th></th>
+                <th>Feature Name</th>
+                <th>Value</th>
+            </tr>
+            <tr ng-repeat="feature in top_n_feature_names">
+                <td>
+                    <button type="button" 
+                        ng-click="pickFeature(feature)">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </td>
+                <td> {{ feature }} </td>
+                <td> {{ unit[feature] | number : 2}} </td>
+            </tr>
+        </table>    
+        <br>
+        <br>
+        <uib-tabset>
+            <uib-tab heading="Distributions">
+                <nvd3 class="dist-graph" options="dist.options" data="dist.data" objectEquality="true">
+                </nvd3>
+
+                <br>
+            </uib-tab>
+            <uib-tab heading="Similar">
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Similarity</th>
+                        <th>Unit ID</th>
+                        <th ng-repeat="feature in top_n_feature_names" >
+                            {{ feature }}
+                        </th>
+                    </tr>
+                    <tr ng-repeat="unit in similar_units"
+                        ng-init="unitIdx = $index">
+                        <td> 
+                            <button type="button" ng-click="pickUnit($index, 'similar')">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </td>
+                        <td> {{ unit.score | number : 2 }} </td>
+                        <td> {{ unit.unit_id }} </td>
+                        <td ng-repeat="feature in top_n_feature_names">
+                            {{ similar_unit_features[unitIdx][feature] | number : 2}}
+                        </td>
+                    </tr>
+                </table>
+                <br>
+            </uib-tab>
+        </uib-tabset>
+    </uib-accordion-group>
+    </uib-accordion>
+</div>

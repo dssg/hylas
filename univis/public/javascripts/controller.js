@@ -1,6 +1,6 @@
 (function () {
     angular.module('univisApp')
-        .controller('univisCtrl', ['$scope', 'dataservice', 'uniplot',
+        .controller('reportCtrl', ['$scope', 'dataservice', 'uniplot',
             function($scope, dataservice, uniplot) {
 
         // initialization
