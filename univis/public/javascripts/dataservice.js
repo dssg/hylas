@@ -1,8 +1,8 @@
 (function () {
     angular.module('univisApp')
-        .factory('dataservice', ['$http', dataservice]);
+        .factory('dataservice', ['$http', 'Upload', dataservice]);
 
-    function dataservice($http) {
+    function dataservice($http, Upload) {
 
         var service = {
             getSimilar: getSimilar,
@@ -12,7 +12,8 @@
             getTopUnits: getTopUnits,
             getTopFeatures: getTopFeatures,
             getModelInfo: getModelInfo,
-            getListModels: getListModels
+            getListModels: getListModels,
+            putCSV: putCSV
         };
 
         return service;
@@ -85,6 +86,13 @@
 
         function getListModels() {
             return getRest('/list_models', {});
+        }
+
+        function putCSV(file) {
+            return Upload.upload({
+                url: 'upload_csv',
+                data: {file: file}
+            });
         }
     }
 })();                

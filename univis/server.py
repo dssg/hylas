@@ -174,6 +174,12 @@ def similar():
     ret = [{'unit_id': uid, 'score': score} for uid, score in
             zip(top_uids, top_scores)]
     return jsonify(data=ret)
+
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    csv = request.files['file'].stream
+    print csv.read()[:100]
+    return "OK"
     
 @app.route('/debug', methods=['GET'])
 def debug():
