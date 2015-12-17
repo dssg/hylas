@@ -32,11 +32,15 @@
         $scope.$watch('selected_feature', updateFeature);
         $scope.$watch('open_view', updateView);
 
-        dataservice.getListModels().then(function (data) {
-            $scope.model_list = data;
-        });
+        initModelList();
 
         $scope.open_view = 'models';
+
+        function initModelList() {
+            dataservice.getListModels().then(function (data) {
+                $scope.model_list = data;
+            });
+        }
 
         // functions
         function updateModel(new_value) {
@@ -185,6 +189,12 @@
                 }
             }
             $scope.open_view = place
+        }
+
+        //TODO just here for development. Remove in production
+        $scope.resetServer = function () {
+            dataservice.resetServer();
+            initModelList();
         }
 
 

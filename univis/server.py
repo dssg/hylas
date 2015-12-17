@@ -2,6 +2,7 @@
 
 import os
 import json
+from datetime import datetime as dt
 
 from flask import Flask
 from flask import jsonify
@@ -154,7 +155,7 @@ def distribution():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     feature = request.args.get('feature')
-    labels_test = model['labels_test']
+    labels_test = model['labels_test'].astype(bool)
     col = model['M_train'][:, model['col_idx'][feature]]
     positive = col[labels_test]
     negative = col[np.logical_not(labels_test)]
@@ -194,16 +195,18 @@ def upload_csv():
     exp = Experiment(M, labels)
     exp.run()
     clear_models()
-    r = exp.trials[0].runs[0][0]
-    register_model(
-            r.clf, 
-            'NOW', 
-            r.M[r.train_indices], 
-            r.M[r.test_indices], 
-            r.labels[r.train_indices], 
-            r.labels[r.test_indices], 
-            r.col_names, 
-            uid_feature)
+    for trial in exp.trials:
+        for subset in trial.runs:
+            for run in subset:
+                register_model(
+                        run.clf, 
+                        dt.now(),
+                        run.M[run.train_indices], 
+                        run.M[run.test_indices], 
+                        run.labels[run.train_indices], 
+                        run.labels[run.test_indices], 
+                        run.col_names, 
+                        uid_feature)
     # TODO return 201 with link to new resource
     return "OK"
     

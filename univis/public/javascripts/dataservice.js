@@ -13,7 +13,8 @@
             getTopFeatures: getTopFeatures,
             getModelInfo: getModelInfo,
             getListModels: getListModels,
-            putCSV: putCSV
+            putCSV: putCSV,
+            resetServer: resetServer
         };
 
         return service;
@@ -22,7 +23,7 @@
             console.log('fetching from host:', resource, params);
             for (var key in params) {
                 if (params.hasOwnProperty(key)) {
-                    // todo return failed request
+                    // todo return failed request if value is undefined
                 }
             }
             return $http.get(resource, {params: params})
@@ -93,6 +94,11 @@
                 url: 'upload_csv',
                 data: {file: file, otherInfo: otherInfo}
             });
+        }
+
+        // TODO just here for development. Remove in production
+        function resetServer() {
+            return $http.post('/reset')
         }
     }
 })();                
