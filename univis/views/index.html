@@ -1,25 +1,33 @@
 <html ng-app="univisApp" ng-cloak> <head>
         <meta charset="utf-8">
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-animate.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-aria.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-route.min.js"></script>
-        <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.14.3.js"></script>
-        <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
-        <script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js" charset="utf-8"></script>
-        <script src="js/angular-nvd3.js"></script>
+        <script src="bower/angular/angular.js"></script>
+        <script src="bower/angular-animate/angular-animate.min.js"></script>
+        <script src="bower/angular-route/angular-route.min.js"></script>
+        <script src="bower/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+        <script src="bower/d3/d3.min.js" charset="utf-8"></script>
+        <script src="bower/nvd3/build/nv.d3.min.js" charset="utf-8"></script>
+        <script src="bower/angular-nvd3/dist/angular-nvd3.js"></script>
 
-        <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css" rel="stylesheet" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <link href="bower/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="bower/nvd3/build/nv.d3.css" rel="stylesheet" />
+        <link href="bower/font-awesome/css/font-awesome.min.css" rel="stylesheet">
         <link href="css/univis.css" rel="stylesheet" />
         <link rel="icon" 
             type="image/x-icon" 
             href="images/favicon.ico">
     </head>
     <body>
-        <image src="images/logo.png"></image> 
-        <span id="hylas-subtitle"> Machine Learning Analysis Engine </span>
+        <header id="hylas-header" class="clearfix">
+            <div class="align-left">
+                <image src="images/logo.png"></image> 
+                Machine Learning Analysis Engine 
+            </div>
+            <div class="align-right">
+                <a href="#/upload">Upload</a> 
+                |
+                <a href="#/report">Report</a>
+            </div>
+        </header>
 
         <div ng-view></div>
 

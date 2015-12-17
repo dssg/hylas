@@ -200,6 +200,10 @@ def image_path(path):
 def views_path(path):
     return send_from_directory('views', path)    
 
+@app.route('/bower/<path:path>', methods=['GET'])
+def bower_path(path):
+    return send_from_directory('bower_components', path)    
+
 if __name__ == '__main__':
 
     # for now, build a sample model

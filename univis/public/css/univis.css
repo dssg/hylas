@@ -13,14 +13,19 @@ td, th {
     padding-left: 5px;
     padding-right: 5px;
 }
-/* https://davidwalsh.name/css-vertical-text */
-.vertical-text {
-    transform: rotate(90deg);
-    transform-origin: left top 0;
+/* http://stackoverflow.com/questions/211383/which-method-of-clearfix-is-best */
+.clearfix:after {
+    content:"";
+    display:table;
+    clear:both;
+}
+.align-left {
     float: left;
 }
-
-#hylas-subtitle {
+.align-right {
+    float: right;
+}
+#hylas-header {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 /* http://stackoverflow.com/questions/13732971/is-an-nvd3-line-plot-with-markers-possible */
