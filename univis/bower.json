@@ -1,0 +1,31 @@
+{
+  "name": "hylas",
+  "homepage": "https://github.com/dssg/hylas",
+  "authors": [
+    "zar1 <zachary.rubenstein@gmail.com>"
+  ],
+  "description": "A dashboard for visualizing machine learning model performance",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-animate": "~1.4.8",
+    "angular-bootstrap": "angular-ui-bootstrap-bower#~0.14.3",
+    "angular-route": "~1.4.8",
+    "angular-nvd3": "~1.0.5",
+    "angular": "~1.4.8",
+    "bootstrap": "~3.3.6",
+    "font-awesome": "fontawesome#~4.5.0",
+    "d3": "~3.5.11",
+    "ng-file-upload-shim": "~10.1.9",
+    "nvd3": "~1.8.1"
+  }
+}
