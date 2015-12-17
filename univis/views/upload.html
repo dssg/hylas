@@ -1,3 +1,11 @@
 <div>
-    {{ message }}
+    <form name="csv_upload">
+        Upload a CSV to process
+        <div class="button" ngf-select ng-model="csvFile" name="csv_file"
+            ngf-pattern="'text/csv'" ngf-accept="'text/csv'" 
+            ngf-max-size="100MB">
+            Select
+        </div>
+        <button type="submit" ng-click="submit()">submit</button>
+        {{csvFile}}
 </div>
