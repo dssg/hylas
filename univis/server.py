@@ -16,9 +16,17 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification
 from sklearn.preprocessing import normalize
 
+from diogenes.utils import open_csv_as_sa
+from diogenes.utils import remove_cols
 from diogenes.display import get_top_features
+from diogenes.grid_search import Experiment
+
 
 models = []
+
+def clear_models():
+    global models
+    models = []
 
 def register_model(fitted_clf, time, M_train, M_test, labels_train, 
                    labels_test, feature_names, uid_feature):
@@ -178,7 +186,25 @@ def similar():
 @app.route('/upload_csv', methods=['POST'])
 def upload_csv():
     csv = request.files['file'].stream
-    print csv.read()[:100]
+    sa = open_csv_as_sa(csv)
+    uid_feature = request.values['otherInfo[unit_id_feature]']
+    label_feature = request.values['otherInfo[label_feature]']
+    labels = sa[label_feature]
+    M = remove_cols(sa, label_feature)
+    exp = Experiment(M, labels)
+    exp.run()
+    clear_models()
+    r = exp.trials[0].runs[0][0]
+    register_model(
+            r.clf, 
+            'NOW', 
+            r.M[r.train_indices], 
+            r.M[r.test_indices], 
+            r.labels[r.train_indices], 
+            r.labels[r.test_indices], 
+            r.col_names, 
+            uid_feature)
+    # TODO return 201 with link to new resource
     return "OK"
     
 @app.route('/debug', methods=['GET'])
@@ -210,9 +236,9 @@ def views_path(path):
 def bower_path(path):
     return send_from_directory('bower_components', path)    
 
-if __name__ == '__main__':
-
-    # for now, build a sample model
+@app.route('/reset', methods=['POST'])
+def reset():
+    clear_models()
     M, labels = make_classification(n_samples=1000)
     M[:,0] = np.arange(1000)
     M_train = M[:800]
@@ -228,6 +254,11 @@ if __name__ == '__main__':
     rf_clf_2.fit(M_train, labels_train)
     register_model(rf_clf_2, 'November 12, 2015', M_train, M_test, labels_train, labels_test,
                    feature_names, 'f0')
+    return "OK"
 
+if __name__ == '__main__':
+
+    # for now, build a sample model
+    reset()
     app.run(debug=True)
 

@@ -88,10 +88,10 @@
             return getRest('/list_models', {});
         }
 
-        function putCSV(file) {
+        function putCSV(file, otherInfo) {
             return Upload.upload({
                 url: 'upload_csv',
-                data: {file: file}
+                data: {file: file, otherInfo: otherInfo}
             });
         }
     }
