@@ -8,6 +8,8 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 from flask import send_from_directory
+from flask.ext.basicauth import BasicAuth
+
 import numpy as np
 
 from sklearn.metrics import f1_score, roc_auc_score, roc_curve, precision_recall_curve
@@ -22,6 +24,7 @@ from diogenes.utils import remove_cols
 from diogenes.display import get_top_features
 from diogenes.grid_search import Experiment
 
+from config import USERNAME, PASSWORD
 
 models = []
 
@@ -58,6 +61,12 @@ def register_model(fitted_clf, time, M_train, M_test, labels_train,
             enumerate(M_test[:,col_idx[uid_feature]])}})
 
 app = Flask(__name__)
+
+app.config['BASIC_AUTH_FORCE'] = True
+app.config['BASIC_AUTH_USERNAME'] = USERNAME
+app.config['BASIC_AUTH_PASSWORD'] = PASSWORD
+
+basic_auth = BasicAuth(app)
 
 @app.route('/list_models', methods=['GET'])
 def list_models():
