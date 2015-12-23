@@ -14,7 +14,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required
 from flask.ext.login import current_user
-from flask.ext.security.utils import encrypt_password, logout_user
+from flask.ext.security.utils import encrypt_password
 
 import numpy as np
 
@@ -74,17 +74,32 @@ def create_user():
             email=USERNAME, 
             password=encrypt_password(PASSWORD))
     db.session.commit()
-    reset()
 
 # Model maintanance
-models = []
+all_models = {}
 
-def clear_models():
-    global models
-    models = []
+def get_models(user):
+    try:
+        return all_models[user]
+    except KeyError:
+        ret = []
+        all_models[user] = ret
+        return ret
 
-def register_model(fitted_clf, time, M_train, M_test, labels_train, 
-                   labels_test, feature_names, uid_feature):
+def clear_models(user):
+    get_models(user)[:] = []
+
+def register_model(
+        user,
+        fitted_clf, 
+        time, 
+        M_train, 
+        M_test, 
+        labels_train, 
+        labels_test, 
+        feature_names, 
+        uid_feature):
+    models = get_models(user)
     # M_train, etc. are numpy array
     # feature names is names of colums
     # uid_feature is the name of the column that has the unique id
@@ -116,6 +131,7 @@ def register_model(fitted_clf, time, M_train, M_test, labels_train,
 @app.route('/list_models', methods=['GET'])
 @login_required
 def list_models():
+    models = get_models(current_user.id)
     ret = [{'model_id': idx, 'time': model['time'], 
             'name': model['clf_name']} for idx, model in 
            enumerate(models)]
@@ -124,6 +140,7 @@ def list_models():
 @app.route('/model_info', methods=['GET'])
 @login_required
 def model_info():
+    models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     perf_metrics = {'f1_score' : f1_score(model['labels_test'], 
@@ -148,6 +165,7 @@ def model_info():
 @app.route('/top_features', methods=['GET'])
 @login_required
 def top_features():
+    models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     n = int(request.args.get('n', '10'))
@@ -162,6 +180,7 @@ def top_features():
 @app.route('/top_units', methods=['GET'])
 @login_required
 def top_units():
+    models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     n = int(request.args.get('n', '10'))
@@ -177,6 +196,7 @@ def top_units():
 @app.route('/unit', methods=['GET'])
 @login_required
 def unit():
+    models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     unit_id = int(request.args.get('unit_id'))
@@ -194,6 +214,7 @@ def unit():
 @app.route('/units', methods=['GET'])
 @login_required
 def units():
+    models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     unit_ids = request.args.get('unit_ids')
@@ -213,6 +234,7 @@ def units():
 @app.route('/distribution', methods=['GET'])
 @login_required
 def distribution():
+    models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     feature = request.args.get('feature')
@@ -226,6 +248,7 @@ def distribution():
 @app.route('/similar', methods=['GET'])
 @login_required
 def similar():
+    models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
     unit_id = int(request.args.get('unit_id'))
@@ -249,7 +272,6 @@ def similar():
 @app.route('/upload_csv', methods=['POST'])
 @login_required
 def upload_csv():
-    print 'uploading'
     csv = request.files['file'].stream
     sa = open_csv_as_sa(csv)
     uid_feature = request.values['otherInfo[unit_id_feature]']
@@ -258,11 +280,12 @@ def upload_csv():
     M = remove_cols(sa, label_feature)
     exp = Experiment(M, labels)
     exp.run()
-    clear_models()
+    clear_models(current_user.id)
     for trial in exp.trials:
         for subset in trial.runs:
             for run in subset:
                 register_model(
+                        current_user.id,
                         run.clf, 
                         dt.now(),
                         run.M[run.train_indices], 
@@ -313,7 +336,7 @@ def bower_path(path):
 @app.route('/reset', methods=['POST'])
 @login_required
 def reset():
-    clear_models()
+    clear_models(current_user.id)
     M, labels = make_classification(n_samples=1000)
     M[:,0] = np.arange(1000)
     M_train = M[:800]
@@ -323,12 +346,28 @@ def reset():
     feature_names = ['f{}'.format(i) for i in xrange(M.shape[1])]
     rf_clf = RandomForestClassifier(n_estimators=10)
     rf_clf.fit(M_train, labels_train)
-    register_model(rf_clf, 'November 10, 2015', M_train, M_test, labels_train, labels_test,
-                   feature_names, 'f0')
+    register_model(
+            current_user.id, 
+            rf_clf, 
+            'November 10, 2015', 
+            M_train, 
+            M_test, 
+            labels_train, 
+            labels_test,
+            feature_names, 
+            'f0')
     rf_clf_2 = RandomForestClassifier(n_estimators=100)
     rf_clf_2.fit(M_train, labels_train)
-    register_model(rf_clf_2, 'November 12, 2015', M_train, M_test, labels_train, labels_test,
-                   feature_names, 'f0')
+    register_model(
+            current_user.id,
+            rf_clf_2, 
+            'November 12, 2015', 
+            M_train, 
+            M_test, 
+            labels_train, 
+            labels_test,
+            feature_names, 
+            'f0')
     return "OK"
 
 if __name__ == '__main__':
