@@ -30,7 +30,7 @@ from diogenes.utils import remove_cols
 from diogenes.display import get_top_features
 from diogenes.grid_search import Experiment
 
-from config import SECRET_KEY, DATABASE_URI, SALT, USERNAME, PASSWORD
+from config import SECRET_KEY, DATABASE_URI, SALT
 
 app = Flask(__name__)
 
@@ -69,10 +69,6 @@ security = Security(app, user_datastore)
 @app.before_first_request
 def create_user():
     db.create_all()
-    if not user_datastore.get_user(USERNAME):
-        user_datastore.create_user(
-            email=USERNAME, 
-            password=encrypt_password(PASSWORD))
     db.session.commit()
 
 # Model maintanance
@@ -127,7 +123,7 @@ def register_model(
             enumerate(M_test[:,col_idx[uid_feature]])}})
 
 # Endpoints
-
+# TODO use tokens rather than login. Less of a security risk
 @app.route('/list_models', methods=['GET'])
 @login_required
 def list_models():
