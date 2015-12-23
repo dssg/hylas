@@ -5,10 +5,16 @@ import json
 from datetime import datetime as dt
 
 from flask import Flask
+from flask import redirect
 from flask import jsonify
 from flask import request
 from flask import send_from_directory
-from flask.ext.basicauth import BasicAuth
+
+from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.security import Security, SQLAlchemyUserDatastore, \
+    UserMixin, RoleMixin, login_required
+from flask.ext.login import current_user
+from flask.ext.security.utils import encrypt_password, logout_user
 
 import numpy as np
 
@@ -24,8 +30,53 @@ from diogenes.utils import remove_cols
 from diogenes.display import get_top_features
 from diogenes.grid_search import Experiment
 
-from config import USERNAME, PASSWORD
+from config import SECRET_KEY, DATABASE_URI, SALT, USERNAME, PASSWORD
 
+app = Flask(__name__)
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# Setting up Flask-security
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+app.config['SECURITY_PASSWORD_HASH'] = 'pbkdf2_sha512'
+app.config['SECURITY_PASSWORD_SALT'] = SALT
+app.config['SECURITY_POST_LOGOUT_VIEW'] = '/login'
+
+db = SQLAlchemy(app)
+
+# Define models
+roles_users = db.Table('roles_users',
+        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
+
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
+
+@app.before_first_request
+def create_user():
+    db.create_all()
+    if not user_datastore.get_user(USERNAME):
+        user_datastore.create_user(
+            email=USERNAME, 
+            password=encrypt_password(PASSWORD))
+    db.session.commit()
+    reset()
+
+# Model maintanance
 models = []
 
 def clear_models():
@@ -60,15 +111,10 @@ def register_model(fitted_clf, time, M_train, M_test, labels_train,
         'uid_idx': {uid: idx for idx, uid in 
             enumerate(M_test[:,col_idx[uid_feature]])}})
 
-app = Flask(__name__)
-
-app.config['BASIC_AUTH_FORCE'] = True
-app.config['BASIC_AUTH_USERNAME'] = USERNAME
-app.config['BASIC_AUTH_PASSWORD'] = PASSWORD
-
-basic_auth = BasicAuth(app)
+# Endpoints
 
 @app.route('/list_models', methods=['GET'])
+@login_required
 def list_models():
     ret = [{'model_id': idx, 'time': model['time'], 
             'name': model['clf_name']} for idx, model in 
@@ -76,6 +122,7 @@ def list_models():
     return jsonify(data=ret)
 
 @app.route('/model_info', methods=['GET'])
+@login_required
 def model_info():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -99,6 +146,7 @@ def model_info():
 #TODO next is top n units, top n features
 
 @app.route('/top_features', methods=['GET'])
+@login_required
 def top_features():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -112,6 +160,7 @@ def top_features():
     return jsonify(data=ret)
 
 @app.route('/top_units', methods=['GET'])
+@login_required
 def top_units():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -126,6 +175,7 @@ def top_units():
     return jsonify(data=ret)
 
 @app.route('/unit', methods=['GET'])
+@login_required
 def unit():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -142,6 +192,7 @@ def unit():
     return jsonify(data=ret)
 
 @app.route('/units', methods=['GET'])
+@login_required
 def units():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -160,6 +211,7 @@ def units():
     return jsonify(data=ret)
 
 @app.route('/distribution', methods=['GET'])
+@login_required
 def distribution():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -172,6 +224,7 @@ def distribution():
     return jsonify(data=ret)
 
 @app.route('/similar', methods=['GET'])
+@login_required
 def similar():
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -194,7 +247,9 @@ def similar():
     return jsonify(data=ret)
 
 @app.route('/upload_csv', methods=['POST'])
+@login_required
 def upload_csv():
+    print 'uploading'
     csv = request.files['file'].stream
     sa = open_csv_as_sa(csv)
     uid_feature = request.values['otherInfo[unit_id_feature]']
@@ -219,36 +274,44 @@ def upload_csv():
     # TODO return 201 with link to new resource
     return "OK"
     
-@app.route('/debug', methods=['GET'])
-def debug():
-    return send_from_directory('views', 'requester.html')    
+#@app.route('/debug', methods=['GET'])
+#@login_required
+#def debug():
+#    return send_from_directory('views', 'requester.html')    
 
 @app.route('/', methods=['GET'])
+@login_required
 def index():
     return send_from_directory('views', 'index.html')    
 
 # http://stackoverflow.com/questions/20646822/how-to-serve-static-files-in-flask
 @app.route('/js/<path:path>', methods=['GET'])
+@login_required
 def js_path(path):
     return send_from_directory(os.path.join('public', 'javascripts'), path)    
 
 @app.route('/css/<path:path>', methods=['GET'])
+@login_required
 def css_path(path):
     return send_from_directory(os.path.join('public', 'css'), path)    
 
 @app.route('/images/<path:path>', methods=['GET'])
+@login_required
 def image_path(path):
     return send_from_directory(os.path.join('public', 'images'), path)    
 
 @app.route('/views/<path:path>', methods=['GET'])
+@login_required
 def views_path(path):
     return send_from_directory('views', path)    
 
 @app.route('/bower/<path:path>', methods=['GET'])
+@login_required
 def bower_path(path):
     return send_from_directory('bower_components', path)    
 
 @app.route('/reset', methods=['POST'])
+@login_required
 def reset():
     clear_models()
     M, labels = make_classification(n_samples=1000)
@@ -271,6 +334,5 @@ def reset():
 if __name__ == '__main__':
 
     # for now, build a sample model
-    reset()
     app.run(debug=True)
 
