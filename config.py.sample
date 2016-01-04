@@ -1,0 +1,3 @@
+SECRET_KEY = 'YOUR_SECRET_KEY_HERE'
+DATABASE_URI = 'sqlite:///users.db'
+SALT = '16RANDOMCHARSxx'
