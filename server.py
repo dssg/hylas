@@ -368,6 +368,5 @@ def reset():
 
 if __name__ == '__main__':
 
-    # for now, build a sample model
     app.run(debug=True)
 
