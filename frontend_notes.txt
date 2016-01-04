@@ -1,0 +1,48 @@
+Page 1 is a list of trials. You click on a trial and you get a page 2
+
+Page 2 has a:
+
+Description of the model and some graphs, under which is a list of 
+students.
+
+Click on a unit and we get a pop-up. THe pop-up has two tabs. One is
+distribution of top features and where this unit falls. The other is most
+similar units by category.
+
+Backend requirements:
+
+* serve a list of models/dates/unique ids
+
+* given unique experiment id, serve model performance -- f1, prec at x%, either ROC
+curve or data needed to make one
+
+* Serve list of top N units with scores and uids for each unit
+
+* given unique unit ID, serve it's value for top n features as well as the
+distribution of those features across training data.
+
+* given unique unit id and feature name(s), give a list of most similar
+  units
+
+implement as:
+
+/list_models - list of dict with model_id, time, clf_name
+/model_info?model_id= dict with model_id, clf_name, time, f0, perc_at_x,
+tpr, fpr, perc chosen
+/top_n_units?model_id=&n= dict of list. lists are unit id, score
+/top_n_features?model_id=&n= serves list of feature names
+/unit?model_id=&unit_id=$features= dict of feature name: val. returns listed
+    features, or all of them by default
+/distribution?model_id=&feature= dict of lists. One list is positive, which is distribution of postive values, the other is negative, which is the distribution of negative values
+/similar?model_id=&unit_id=&features= a list dict with uid and values for
+a given feature
+
+The backend will be in flask (for now). Let's implement a class that has
+the method:
+
+register_model(fitted_clf, time, M_train, M_test, labels_train, labels_test):
+# This will take more meta_info later
+
+start_server(port)
+
+ list of top students. 

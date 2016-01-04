@@ -1,0 +1,61 @@
+<!-- angular.js apps to make arbitrary get requests and return the results -->
+<html>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+    <body>
+
+        <div ng-app="myApp" ng-controller="myCtrl">
+            Host: <input type="text" ng-model="host" /><br>
+            Port: <input type="text" ng-model="port" /><br>
+            Resource: <input type="text" ng-model="resource" /><br>
+            Parameters:<br>
+            <table>
+                <tr><th>Key</th><th>Value</th></tr>
+                <tr ng-repeat="param in params track by $index">
+                    <td>
+                    <input type="text" ng-model="params[$index][0]" />
+                    </td>
+                    <td>
+                    <input type="text" ng-model="params[$index][1]" />
+                    </td>
+                </tr>
+            </table>
+            <button ng-click="add_param()">+</button>
+            <button ng-click="rm_param()">-</button>
+            <br>
+            <button ng-click="request()">request</button>
+            <div>
+                {{response}}
+            </div>
+        </div>
+
+        <script>
+            var app = angular.module('myApp', []);
+            app.controller('myCtrl', ['$scope', '$http', '$location', 
+                function($scope, $http, $location) {
+                $scope.host = $location.host();
+                $scope.port = $location.port();
+                $scope.resource = 'list_models';
+                $scope.response = 'Waiting to send request';
+                $scope.params = [];
+                $scope.add_param = function() {$scope.params.push(['key', 'val'])};
+                $scope.rm_param = function() {$scope.params.pop()};
+                $scope.request = function() {
+                    var url = 'http://' + $scope.host + ':' + $scope.port + 
+                        '/' + $scope.resource;
+                    //http://stackoverflow.com/questions/4215737/convert-array-to-object
+                    var param_dict = $scope.params.reduce(function (prev_value, cur_value) {
+                        prev_value[cur_value[0]] = cur_value[1];
+                        return prev_value;
+                    }, {});
+                    var config = {'method': 'GET', 'url': url, 'params': param_dict};
+                    $http(config).then(function (response) {
+                        $scope.response = response.data;
+                    }, function (response) {
+                        $scope.response = 'Error';
+                    });
+                };
+            }]);
+        </script>
+    </body>
+</html>
+

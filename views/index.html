@@ -1,0 +1,46 @@
+<html ng-app="univisApp" ng-cloak> <head>
+        <meta charset="utf-8">
+        <script src="bower/angular/angular.js"></script>
+        <script src="bower/angular-animate/angular-animate.min.js"></script>
+        <script src="bower/angular-route/angular-route.min.js"></script>
+        <script src="bower/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+        <script src="bower/d3/d3.min.js" charset="utf-8"></script>
+        <script src="bower/nvd3/build/nv.d3.min.js" charset="utf-8"></script>
+        <script src="bower/angular-nvd3/dist/angular-nvd3.js"></script>
+        <script src="bower/ng-file-upload-shim/ng-file-upload-shim.min.js"></script>
+        <script src="bower/ng-file-upload/ng-file-upload.min.js"></script>
+
+        <link href="bower/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="bower/nvd3/build/nv.d3.css" rel="stylesheet" />
+        <link href="bower/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/univis.css" rel="stylesheet" />
+        <link rel="icon" 
+            type="image/x-icon" 
+            href="images/favicon.ico">
+    </head>
+    <body>
+        <header id="hylas-header" class="clearfix">
+            <div class="align-left">
+                <image src="images/logo.png"></image> 
+                Machine Learning Analysis Engine 
+            </div>
+            <div class="align-right">
+                <a href="#/upload">Upload</a> 
+                |
+                <a href="#/report">Report</a>
+                |
+                <a href="/logout">Logout</a>
+            </div>
+        </header>
+
+        <div ng-view></div>
+
+        <script src="js/app.js"></script>
+        <script src="js/routing.js"></script>
+        <script src="js/controller_report.js"></script>
+        <script src="js/controller_upload.js"></script>
+        <script src="js/dataservice.js"></script>
+        <script src="js/uniplot.js"></script>
+    </body>
+</html>
+

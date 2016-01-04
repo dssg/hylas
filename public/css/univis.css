@@ -1,0 +1,36 @@
+/* http://stackoverflow.com/questions/23205420/how-can-i-get-angular-ui-bootstrap-tabs-to-fill-the-remaining-height */
+html, body, .tabset, .tab-content, .tab-pane, .tabbable {
+    height:100%;
+}
+.tab-content {
+    height:100%;
+}
+table {
+    border-spacing: 2px;
+    border-collapse: collapse;
+}
+td, th { 
+    padding-left: 5px;
+    padding-right: 5px;
+}
+/* http://stackoverflow.com/questions/211383/which-method-of-clearfix-is-best */
+.clearfix:after {
+    content:"";
+    display:table;
+    clear:both;
+}
+.align-left {
+    float: left;
+}
+.align-right {
+    float: right;
+}
+#hylas-header {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+/* http://stackoverflow.com/questions/13732971/is-an-nvd3-line-plot-with-markers-possible */
+.dist-graph .nv-point {
+    stroke-opacity: 1!important;
+    stroke-width: 5px!important;
+    fill-opacity: 1!important;
+}
