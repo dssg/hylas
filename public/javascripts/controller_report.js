@@ -191,11 +191,6 @@
             $scope.open_view = place
         }
 
-        //TODO just here for development. Remove in production
-        $scope.resetServer = function () {
-            dataservice.resetServer();
-            initModelList();
-        }
 
 
     }]);

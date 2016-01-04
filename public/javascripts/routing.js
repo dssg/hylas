@@ -12,7 +12,7 @@
                     controller: 'uploadCtrl'
                 })
                 .otherwise({
-                    redirectTo: '/report'
+                    redirectTo: '/upload'
                 });
         }]);
 })()

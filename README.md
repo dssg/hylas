@@ -18,10 +18,10 @@ Webapp for visualizing ML'd data
 2. From the project's root directory, run `bower install`.
 3. Create a `config.py` file in the project's root directory. You may use the 
    included `config.py.sample` as a template.
-4. Run `python server.py`
+4. Run `python server.py` to start the server
 5. Visit `http://127.0.0.1:5000/` with a web browser. This creates the user
    database.
 6. Terminate the server.
 7. Run `python add_user.py USERNAME PASSWORD` to add a user to the database.
-8. Start the server again. 
+8. Start the server again with `python server.py`. 
 9. Visit `http://127.0.0.1:5000/` and log in with the username and password you    have just created.

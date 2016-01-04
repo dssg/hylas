@@ -1,33 +1,46 @@
 <div>
-    <div>
-        <table>
-            <tr>
-                <td>
-                    CSV file:
-                </td>
-                <td>
-                    <button ngf-select ng-model="csvFile" name="csv_file"
-                        ngf-pattern="'text/csv'" ngf-accept="'text/csv'" 
-                        ngf-max-size="100MB">
-                        {{csvFile.name || 'Select a CSV to Upload'}}
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td> Unit ID column: </td>
-                <td>
-                    <input type="text" ng-model="uid_column"></input>
-                </td>
-            </tr>
-            <tr>
-                <td> label column: </td>
-                <td>
-                    <input type="text" ng-model="label_column"></input>
-                </td>
-            </tr>
-        </table>
-        <button ng-click="submit()">Submit</button>
-        <br>
-        {{uploadStatus}}
-    </div>
+    <uib-tabset>
+        <uib-tab heading="Upload a CSV">
+            <table>
+                <tr>
+                    <td>
+                        CSV file:
+                    </td>
+                    <td>
+                        <button 
+                            ngf-select 
+                            ng-model="model.csvFile" 
+                            name="csv_file"
+                            ngf-pattern="'text/csv'" 
+                            ngf-accept="'text/csv'" 
+                            ngf-max-size="100MB">
+                                {{model.csvFile.name || 'Select a CSV to Upload'}}
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Unit ID column: </td>
+                    <td>
+                        <input type="text" ng-model="model.uid_column"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td> label column: </td>
+                    <td>
+                        <input type="text" ng-model="model.label_column"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button ng-click="submit()">Submit</button>
+                    </td>
+                </tr>
+            </table>
+            {{model.uploadStatus}}
+        </uib-tab>
+        <uib-tab heading="Use Sample Data">
+            <button ng-click="resetServer()">Submit</button>
+        </uib-tab>
+    </uib-tabset>
 </div>

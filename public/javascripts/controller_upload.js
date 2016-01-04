@@ -1,19 +1,41 @@
 (function () {
     angular.module('univisApp')
-    .controller('uploadCtrl', ['$scope', 'dataservice',
-        function($scope, dataservice) {
+    .controller('uploadCtrl', ['$scope', '$location', 'dataservice',
+        function($scope, $location, dataservice) {
 
-        $scope.uid_column = 'id';
-        $scope.label_column = 'label';
+        $scope.model = {
+            uid_column: 'id',
+            label_column: 'label',
+            csvFile: undefined,
+            uploadStatus: ''};
+
+        function goReport() {
+            $location.path('/report');
+        }
 
         $scope.submit = function() {
-            $scope.uploadStatus = "working..."
-            var otherInfo = {unit_id_feature : $scope.uid_column,
-                             label_feature : $scope.label_column}
-            dataservice.putCSV($scope.csvFile, otherInfo)
+            if ($scope.model.csvFile === undefined) {
+                $scope.model.uploadStatus = "No file selected";
+                return;
+            }
+            $scope.model.uploadStatus = "working..."
+            var otherInfo = {unit_id_feature : $scope.model.uid_column,
+                             label_feature : $scope.model.label_column}
+            dataservice.putCSV($scope.model.csvFile, otherInfo)
             .then(function () {
-                $scope.uploadStatus = "Upload Complete"
+                $scope.model.uploadStatus = "Upload Complete"
+                goReport();
+            })
+            .catch(function (response) {
+                $scope.model.uploadStatus = "Failed with status: " + 
+                    response.status;
             });
+        }
+
+        //TODO just here for development. Remove in production
+        $scope.resetServer = function () {
+            dataservice.resetServer();
+            goReport();
         }
 
     }]);
