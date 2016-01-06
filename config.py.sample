@@ -2,6 +2,7 @@ SECRET_KEY = 'YOUR_SECRET_KEY_HERE'
 DATABASE_URI = 'sqlite:///users.db'
 SALT = '16RANDOMCHARSxx'
 
+import datetime
 def REPORT_FORMAT(report, experiment):
     report.add_heading('Eights Report {}'.format(datetime.datetime.now()), 1)
     report.add_heading('Roc AUCs', 3)
