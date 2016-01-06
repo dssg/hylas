@@ -2,6 +2,7 @@
 
 import os
 import json
+import uuid
 from datetime import datetime as dt
 
 from flask import Flask
@@ -9,6 +10,7 @@ from flask import redirect
 from flask import jsonify
 from flask import request
 from flask import send_from_directory
+from flask import send_file
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, \
@@ -28,9 +30,11 @@ from sklearn.preprocessing import normalize
 from diogenes.utils import open_csv_as_sa
 from diogenes.utils import remove_cols
 from diogenes.display import get_top_features
+from diogenes.display import Report
 from diogenes.grid_search import Experiment
+from diogenes.grid_search.standard_clfs import DBG_std_clfs
 
-from config import SECRET_KEY, DATABASE_URI, SALT
+from config import SECRET_KEY, DATABASE_URI, SALT, REPORT_FORMAT
 
 app = Flask(__name__)
 
@@ -73,6 +77,7 @@ def create_user():
 
 # Model maintanance
 all_models = {}
+last_experiments = {}
 
 def get_models(user):
     try:
@@ -265,17 +270,13 @@ def similar():
             zip(top_uids, top_scores)]
     return jsonify(data=ret)
 
-@app.route('/upload_csv', methods=['POST'])
-@login_required
-def upload_csv():
-    csv = request.files['file'].stream
-    sa = open_csv_as_sa(csv)
-    uid_feature = request.values['otherInfo[unit_id_feature]']
-    label_feature = request.values['otherInfo[label_feature]']
+def run_csv(fin, uid_feature, label_feature):
+    sa = open_csv_as_sa(fin)
     labels = sa[label_feature]
     M = remove_cols(sa, label_feature)
-    exp = Experiment(M, labels)
+    exp = Experiment(M, labels, clfs=DBG_std_clfs)
     exp.run()
+    last_experiments[current_user.id] = exp
     clear_models(current_user.id)
     for trial in exp.trials:
         for subset in trial.runs:
@@ -290,8 +291,32 @@ def upload_csv():
                         run.labels[run.test_indices], 
                         run.col_names, 
                         uid_feature)
+
+@app.route('/upload_csv', methods=['POST'])
+@login_required
+def upload_csv():
+    fin = request.files['file'].stream
+    uid_feature = request.values['otherInfo[unit_id_feature]']
+    label_feature = request.values['otherInfo[label_feature]']
+    run_csv(fin, uid_feature, label_feature)
     # TODO return 201 with link to new resource
     return "OK"
+
+@app.route('/download_pdf', methods=['GET'])
+@login_required
+def download_pdf():
+    try:
+        exp = last_experiments[current_user.id]
+    except KeyError:
+        return 'No CSV Uploaded', 409
+    base_path = os.path.join('pdf', '{}'.format(current_user.id))
+    if not os.path.exists(base_path):
+        os.makedirs(base_path)
+    report_path = os.path.join(base_path, '{}.pdf'.format(uuid.uuid4()))
+    report = Report(exp=exp, report_path=report_path)
+    REPORT_FORMAT(report, exp)
+    report.to_pdf(verbose=False)
+    return send_file(report_path, as_attachment=True)
     
 #@app.route('/debug', methods=['GET'])
 #@login_required
@@ -332,38 +357,8 @@ def bower_path(path):
 @app.route('/reset', methods=['POST'])
 @login_required
 def reset():
-    clear_models(current_user.id)
-    M, labels = make_classification(n_samples=1000)
-    M[:,0] = np.arange(1000)
-    M_train = M[:800]
-    labels_train = labels[:800]
-    M_test = M[800:]
-    labels_test = labels[800:]
-    feature_names = ['f{}'.format(i) for i in xrange(M.shape[1])]
-    rf_clf = RandomForestClassifier(n_estimators=10)
-    rf_clf.fit(M_train, labels_train)
-    register_model(
-            current_user.id, 
-            rf_clf, 
-            'November 10, 2015', 
-            M_train, 
-            M_test, 
-            labels_train, 
-            labels_test,
-            feature_names, 
-            'f0')
-    rf_clf_2 = RandomForestClassifier(n_estimators=100)
-    rf_clf_2.fit(M_train, labels_train)
-    register_model(
-            current_user.id,
-            rf_clf_2, 
-            'November 12, 2015', 
-            M_train, 
-            M_test, 
-            labels_train, 
-            labels_test,
-            feature_names, 
-            'f0')
+    with open('sample.csv') as fin:
+        run_csv(fin, 'id', 'label')
     return "OK"
 
 if __name__ == '__main__':
