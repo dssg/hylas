@@ -2,6 +2,7 @@
 
 import os
 import json
+import uuid
 from datetime import datetime as dt
 
 from flask import Flask
@@ -9,6 +10,7 @@ from flask import redirect
 from flask import jsonify
 from flask import request
 from flask import send_from_directory
+from flask import send_file
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, \
@@ -28,9 +30,10 @@ from sklearn.preprocessing import normalize
 from diogenes.utils import open_csv_as_sa
 from diogenes.utils import remove_cols
 from diogenes.display import get_top_features
+from diogenes.display import Report
 from diogenes.grid_search import Experiment
 
-from config import SECRET_KEY, DATABASE_URI, SALT
+from config import SECRET_KEY, DATABASE_URI, SALT, REPORT_FORMAT
 
 app = Flask(__name__)
 
@@ -73,6 +76,7 @@ def create_user():
 
 # Model maintanance
 all_models = {}
+last_experiments = {}
 
 def get_models(user):
     try:
@@ -276,6 +280,7 @@ def upload_csv():
     M = remove_cols(sa, label_feature)
     exp = Experiment(M, labels)
     exp.run()
+    last_experiments[current_user.id] = exp
     clear_models(current_user.id)
     for trial in exp.trials:
         for subset in trial.runs:
@@ -292,6 +297,22 @@ def upload_csv():
                         uid_feature)
     # TODO return 201 with link to new resource
     return "OK"
+
+@app.route('/download_pdf', methods=['GET'])
+@login_required
+def download_pdf():
+    try:
+        exp = last_experiments[current_user.id]
+    except KeyError:
+        return 'No CSV Uploaded', 409
+    base_path = os.path.join('pdf', '{}'.format(current_user.id))
+    if not os.path.exists(base_path):
+        os.makedirs(base_path)
+    report_path = os.path.join(base_path, '{}.pdf'.format(uuid.uuid4()))
+    report = Report(exp=exp, report_path=report_path)
+    REPORT_FORMAT(report, exp)
+    report.to_pdf(verbose=False)
+    return send_file(report_path)
     
 #@app.route('/debug', methods=['GET'])
 #@login_required
