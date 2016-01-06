@@ -11,11 +11,14 @@ Webapp for visualizing ML'd data
 * [Scikit-Learn](http://scikit-learn.org/stable/)
 * [DSSG Diogenes](https://github.com/dssg/diogenes)
 * [Bower](http://bower.io/)
+* [wkhtmltopdf](http://wkhtmltopdf.org/)
 
 ## Running
 
 1. Install required dependencies.
 2. From the project's root directory, run `bower install`.
+3. If you are running on a headless server, you will have to 
+   [configure wkhtmltopdf to run without X](https://github.com/JazzCore/python-pdfkit/wiki/Using-wkhtmltopdf-without-X-server)
 3. Create a `config.py` file in the project's root directory. You may use the 
    included `config.py.sample` as a template.
 4. Run `python server.py` to start the server
