@@ -13,6 +13,7 @@
             getTopFeatures: getTopFeatures,
             getModelInfo: getModelInfo,
             getListModels: getListModels,
+            getParamSpec: getParamSpec,
             putCSV: putCSV,
             putPkl: putPkl,
             resetServer: resetServer
@@ -31,6 +32,20 @@
                 .then(function(response) {
                     var data = angular.fromJson(response.data).data;
                     console.log('got for ' + resource + ':', data);
+                    return data;
+                })
+                .catch(function(response) {
+                    console.log('REQUEST FAILED', response);
+                    return response;
+                });
+        }
+
+        function getStatic(resource) {
+            console.log('fetching static from host:', resource);
+            return $http.get(resource)
+                .then(function(response) {
+                    var data = response.data;
+                    console.log('got for static ' + resource + ':', data);
                     return data;
                 })
                 .catch(function(response) {
@@ -88,6 +103,10 @@
 
         function getListModels() {
             return getRest('/list_models', {});
+        }
+
+        function getParamSpec() {
+            return getStatic('/js/parse_params/params.json');
         }
 
         function putCSV(file, otherInfo) {

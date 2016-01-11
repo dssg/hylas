@@ -8,8 +8,14 @@
             label_column: 'label',
             csvFile: undefined,
             pklFile: undefined,
-            uploadStatus: ''};
+            uploadStatus: '',
+            paramsSpec: undefined};
 
+        dataservice.getParamSpec()
+            .then(function (response) {
+                $scope.model.paramSpec = response;
+            });
+    
         function goReport() {
             $location.path('/report');
         }
