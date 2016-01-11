@@ -3,6 +3,7 @@
 import os
 import json
 import uuid
+import cPickle
 from datetime import datetime as dt
 
 from flask import Flask
@@ -270,11 +271,7 @@ def similar():
             zip(top_uids, top_scores)]
     return jsonify(data=ret)
 
-def run_csv(fin, uid_feature, label_feature):
-    sa = open_csv_as_sa(fin)
-    labels = sa[label_feature]
-    M = remove_cols(sa, label_feature)
-    exp = Experiment(M, labels, clfs=DBG_std_clfs)
+def register_exp(exp, uid_feature):
     exp.run()
     last_experiments[current_user.id] = exp
     clear_models(current_user.id)
@@ -292,6 +289,13 @@ def run_csv(fin, uid_feature, label_feature):
                         run.col_names, 
                         uid_feature)
 
+def run_csv(fin, uid_feature, label_feature):
+    sa = open_csv_as_sa(fin)
+    labels = sa[label_feature]
+    M = remove_cols(sa, label_feature)
+    exp = Experiment(M, labels, clfs=DBG_std_clfs)
+    register_exp(exp, uid_feature)
+
 @app.route('/upload_csv', methods=['POST'])
 @login_required
 def upload_csv():
@@ -299,6 +303,16 @@ def upload_csv():
     uid_feature = request.values['otherInfo[unit_id_feature]']
     label_feature = request.values['otherInfo[label_feature]']
     run_csv(fin, uid_feature, label_feature)
+    # TODO return 201 with link to new resource
+    return "OK"
+
+@app.route('/upload_pkl', methods=['POST'])
+@login_required
+def upload_pkl():
+    fin = request.files['file'].stream
+    uid_feature = request.values['otherInfo[unit_id_feature]']
+    exp = cPickle.load(fin)
+    register_exp(exp, uid_feature)
     # TODO return 201 with link to new resource
     return "OK"
 
@@ -317,12 +331,36 @@ def download_pdf():
     REPORT_FORMAT(report, exp)
     report.to_pdf(verbose=False)
     return send_file(report_path, as_attachment=True)
-    
-#@app.route('/debug', methods=['GET'])
-#@login_required
-#def debug():
-#    return send_from_directory('views', 'requester.html')    
 
+@app.route('/download_csv', methods=['GET'])
+@login_required
+def download_csv():
+    try:
+        exp = last_experiments[current_user.id]
+    except KeyError:
+        return 'No CSV Uploaded', 409
+    base_path = os.path.join('csv', '{}'.format(current_user.id))
+    if not os.path.exists(base_path):
+        os.makedirs(base_path)
+    report_path = os.path.join(base_path, '{}.csv'.format(uuid.uuid4()))
+    exp.make_csv(file_name=report_path)
+    return send_file(report_path, as_attachment=True)
+
+@app.route('/download_pkl', methods=['GET'])
+@login_required
+def download_pkl():
+    try:
+        exp = last_experiments[current_user.id]
+    except KeyError:
+        return 'No CSV Uploaded', 409
+    base_path = os.path.join('pkl', '{}'.format(current_user.id))
+    if not os.path.exists(base_path):
+        os.makedirs(base_path)
+    report_path = os.path.join(base_path, '{}.pkl'.format(uuid.uuid4()))
+    with open(report_path, 'wb') as pkl_file:
+        cPickle.dump(exp, pkl_file)
+    return send_file(report_path, as_attachment=True)
+    
 @app.route('/', methods=['GET'])
 @login_required
 def index():

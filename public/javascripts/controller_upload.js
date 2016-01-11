@@ -7,6 +7,7 @@
             uid_column: 'id',
             label_column: 'label',
             csvFile: undefined,
+            pklFile: undefined,
             uploadStatus: ''};
 
         function goReport() {
@@ -22,6 +23,24 @@
             var otherInfo = {unit_id_feature : $scope.model.uid_column,
                              label_feature : $scope.model.label_column}
             dataservice.putCSV($scope.model.csvFile, otherInfo)
+            .then(function () {
+                $scope.model.uploadStatus = "Upload Complete"
+                goReport();
+            })
+            .catch(function (response) {
+                $scope.model.uploadStatus = "Failed with status: " + 
+                    response.status;
+            });
+        }
+
+        $scope.submitPkl = function() {
+            if ($scope.model.pklFile === undefined) {
+                $scope.model.uploadStatus = "No file selected";
+                return;
+            }
+            $scope.model.uploadStatus = "working..."
+            var otherInfo = {unit_id_feature : $scope.model.uid_column}
+            dataservice.putPkl($scope.model.pklFile, otherInfo)
             .then(function () {
                 $scope.model.uploadStatus = "Upload Complete"
                 goReport();

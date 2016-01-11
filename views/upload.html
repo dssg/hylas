@@ -39,6 +39,39 @@
             </table>
             {{model.uploadStatus}}
         </uib-tab>
+        <uib-tab heading="Upload a Pickled Experiment">
+            <table>
+                <tr>
+                    <td>
+                        CSV file:
+                    </td>
+                    <td>
+                        <button 
+                            ngf-select 
+                            ng-model="model.pklFile" 
+                            name="pkl_file"
+                            ngf-pattern="'.pkl'" 
+                            ngf-accept="'.pkl'" 
+                            ngf-max-size="100MB">
+                                {{model.pklFile.name || 'Select a .pkl to Upload'}}
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Unit ID column: </td>
+                    <td>
+                        <input type="text" ng-model="model.uid_column"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <button ng-click="submitPkl()">Submit</button>
+                    </td>
+                </tr>
+            </table>
+            {{model.uploadStatus}}
+        </uib-tab>
         <uib-tab heading="Use Sample Data">
             Use a sample CSV<br>
             <button ng-click="resetServer()">Submit</button>

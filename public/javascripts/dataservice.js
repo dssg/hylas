@@ -14,6 +14,7 @@
             getModelInfo: getModelInfo,
             getListModels: getListModels,
             putCSV: putCSV,
+            putPkl: putPkl,
             resetServer: resetServer
         };
 
@@ -92,6 +93,13 @@
         function putCSV(file, otherInfo) {
             return Upload.upload({
                 url: 'upload_csv',
+                data: {file: file, otherInfo: otherInfo}
+            });
+        }
+
+        function putPkl(file, otherInfo) {
+            return Upload.upload({
+                url: 'upload_pkl',
                 data: {file: file, otherInfo: otherInfo}
             });
         }
