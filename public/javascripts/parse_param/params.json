@@ -1,0 +1,23 @@
+{
+    'AdaBoostClassifier': 
+        {
+            'n_estimators': 'Number'
+        }, 
+    'RandomForestClassifier': 
+        {     
+            'n_estimators': 'Number',
+            'max_features': ['sqrt','log2'],
+            'max_depth': 'Number'
+        }, 
+    'LogisticRegression' :
+        {
+            'C': 'Number',
+            'penalty': ['l1','l2']
+        }, 
+            {'clf': DecisionTreeClassifier, 
+             'max_depth': [None,4,7,15,25]},
+            {'clf': SVC, 'kernel': ['linear','rbf'], 
+             'probability': [True],
+             'max_iter': [1000]},
+            {'clf': DummyClassifier, 
+             'strategy': ['stratified','most_frequent','uniform']}]
