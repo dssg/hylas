@@ -15,9 +15,7 @@
         dataservice.getParamSpec()
             .then(function (response) {
                 $scope.model.paramSpec = response;
-                $scope.model.clfs.push(
-                    [Object.keys($scope.model.paramSpec)[0],
-                     []]);
+                $scope.model.clfs.push(['RandomForestClassifier', []]);
             });
     
         function goReport() {
@@ -44,6 +42,7 @@
         }
 
         $scope.add_param_setting = function(clf_idx, param_idx) {
+            //$scope.model.clfs[clf_idx][1][param_idx][1].push(null);
             $scope.model.clfs[clf_idx][1][param_idx][1].push(null);
         }
 

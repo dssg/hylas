@@ -39,7 +39,12 @@
       </table>
       {{model.uploadStatus}}
       <br>
-      <table>
+      <table class="hylas-horizontal-borders">
+        <tr>
+            <th>Classifier</th>
+            <th>Parameter</th>
+            <th>Values</th>
+        </tr>
         <tr ng-repeat="clf in model.clfs track by $index"
           ng-init="clf_idx = $index">
           <td>
@@ -52,7 +57,7 @@
             </select>
           </td>
           <td>
-            <table>
+            <table class="hylas-horizontal-borders">
               <tr ng-repeat="param in model.clfs[clf_idx][1] 
                 track by $index"
                 ng-init="param_idx = $index">
@@ -74,7 +79,7 @@
                       <td>
                         <div ng-if="isArray(
                             model.paramSpec[clf[0]][param[0]])")>
-                          <select ng-model=param_setting>
+                          <select ng-model=model.clfs[clf_idx][1][param_idx][1][param_setting_idx]>
                             <option 
                               ng-repeat="option in 
                               model.paramSpec[clf[0]][param[0]]"
@@ -86,7 +91,8 @@
                         <div ng-if="model.paramSpec[clf[0]][param[0]] === 
                             'Number'">
                           <input type="text" 
-                            ng-model="param_setting"></input>
+                            ng-model="model.clfs[clf_idx][1][param_idx][1][param_setting_idx]">
+                          </input>
                         </div>
                       </td>
                     </tr>
