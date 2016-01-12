@@ -25,6 +25,17 @@ td, th {
 .align-right {
     float: right;
 }
+/*http://stackoverflow.com/questions/13624276/html-how-to-separate-table-rows-with-a-line*/
+.hylas-horizontal-borders tr {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+.hylas-horizontal-borders tr:first-child {
+    border-top: none;
+}
+.hylas-horizontal-borders tr:last-child {
+    border-bottom: none;
+}
 #hylas-header {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     padding: 10px;

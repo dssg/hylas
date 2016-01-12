@@ -1,47 +1,175 @@
 <div>
-    <uib-tabset>
-        <uib-tab heading="Upload a CSV">
-            <table>
-                <tr>
-                    <td>
-                        CSV file:
-                    </td>
-                    <td>
-                        <button 
-                            ngf-select 
-                            ng-model="model.csvFile" 
-                            name="csv_file"
-                            ngf-pattern="'text/csv'" 
-                            ngf-accept="'text/csv'" 
-                            ngf-max-size="100MB">
-                                {{model.csvFile.name || 'Select a CSV to Upload'}}
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td> Unit ID column: </td>
-                    <td>
-                        <input type="text" ng-model="model.uid_column"></input>
-                    </td>
-                </tr>
-                <tr>
-                    <td> label column: </td>
-                    <td>
-                        <input type="text" ng-model="model.label_column"></input>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>
-                        <button ng-click="submit()">Submit</button>
-                    </td>
-                </tr>
+  <uib-tabset>
+    <uib-tab heading="Upload a CSV">
+      <table>
+        <tr>
+          <td>
+            CSV file:
+          </td>
+          <td>
+            <button 
+              ngf-select 
+              ng-model="model.csvFile" 
+              name="csv_file"
+              ngf-pattern="'text/csv'" 
+              ngf-accept="'text/csv'" 
+              ngf-max-size="100MB">
+                {{model.csvFile.name || 'Select a CSV to Upload'}}
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td> Unit ID column: </td>
+          <td>
+            <input type="text" ng-model="model.uid_column"></input>
+          </td>
+        </tr>
+        <tr>
+          <td> label column: </td>
+          <td>
+            <input type="text" ng-model="model.label_column"></input>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <button ng-click="submit()">Submit</button>
+          </td>
+        </tr>
+      </table>
+      {{model.uploadStatus}}
+      <br>
+      <table class="hylas-horizontal-borders">
+        <tr>
+            <th>Classifier</th>
+            <th>Parameter</th>
+            <th>Values</th>
+        </tr>
+        <tr ng-repeat="clf in model.clfs track by $index"
+          ng-init="clf_idx = $index">
+          <td>
+            <select ng-model=clf[0]>
+              <option 
+                ng-repeat="(clf, params) in model.paramSpec"
+                value="{{clf}}">
+                {{clf}}
+              </option>
+            </select>
+          </td>
+          <td>
+            <table class="hylas-horizontal-borders">
+              <tr ng-repeat="param in model.clfs[clf_idx][1] 
+                track by $index"
+                ng-init="param_idx = $index">
+                <td>
+                  <select ng-model=param[0]>
+                    <option 
+                      ng-repeat="(param, fmt) in 
+                      model.paramSpec[clf[0]]"
+                      value="{{param}}">
+                      {{param}}
+                    </option>
+                  </select>
+                </td>
+                <td>
+                  <table>
+                    <tr ng-repeat="param_setting in 
+                        model.clfs[clf_idx][1][param_idx][1] track by $index"
+                        ng-init="param_setting_idx = $index">
+                      <td>
+                        <div ng-if="isArray(
+                            model.paramSpec[clf[0]][param[0]])")>
+                          <select ng-model=model.clfs[clf_idx][1][param_idx][1][param_setting_idx]>
+                            <option 
+                              ng-repeat="option in 
+                              model.paramSpec[clf[0]][param[0]]"
+                              value="{{option}}">
+                              {{option}}
+                            </option>
+                          </select>
+                        </div>
+                        <div ng-if="model.paramSpec[clf[0]][param[0]] === 
+                            'Integer' || 
+                            model.paramSpec[clf[0]][param[0]] === 'Float'">
+                          <input type="text" 
+                            ng-model="model.clfs[clf_idx][1][param_idx][1][param_setting_idx]">
+                          </input>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                          <button ng-click="add_param_setting(
+                              clf_idx, param_idx)">
+                            +
+                          </button>
+                          <button ng-click="remove_param_setting(clf_idx, 
+                              param_idx)">
+                            -
+                          </button>
+                      </td>
+                    </tr>
+                  </table>
+              </tr>
+              <tr>
+                <td>
+                  <button ng-click="add_param(clf_idx)">
+                    +
+                  </button>
+                  <button ng-click="remove_param(clf_idx)">
+                    -
+                  </button>
+                </td>
+              </tr>
             </table>
-            {{model.uploadStatus}}
-        </uib-tab>
-        <uib-tab heading="Use Sample Data">
-            Use a sample CSV<br>
-            <button ng-click="resetServer()">Submit</button>
-        </uib-tab>
-    </uib-tabset>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button ng-click="add_clf()">+</button>
+            <button ng-click="remove_clf()">-</button>
+          </td>
+        </tr>
+      </table>
+      <br>
+      {{model.clfs}}
+    </uib-tab>
+    <uib-tab heading="Upload a Pickled Experiment">
+      <table>
+        <tr>
+          <td>
+            CSV file:
+          </td>
+          <td>
+            <button 
+              ngf-select 
+              ng-model="model.pklFile" 
+              name="pkl_file"
+              ngf-pattern="'.pkl'" 
+              ngf-accept="'.pkl'" 
+              ngf-max-size="100MB">
+                {{model.pklFile.name || 'Select a .pkl to Upload'}}
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td> Unit ID column: </td>
+          <td>
+            <input type="text" ng-model="model.uid_column"></input>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <button ng-click="submitPkl()">Submit</button>
+          </td>
+        </tr>
+      </table>
+      {{model.uploadStatus}}
+    </uib-tab>
+    <uib-tab heading="Use Sample Data">
+      Use a sample CSV<br>
+      <button ng-click="resetServer()">Submit</button>
+    </uib-tab>
+  </uib-tabset>
 </div>
