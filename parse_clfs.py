@@ -60,8 +60,6 @@ def parse_clfs(clf_json):
                             pass
                 this_arg[param] = settings
             args.append(this_arg)
-        print clf_json
-        print args
         return args
     except Exception:
         return [{'clf': RandomForestClassifier}]
