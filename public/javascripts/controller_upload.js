@@ -9,15 +9,46 @@
             csvFile: undefined,
             pklFile: undefined,
             uploadStatus: '',
-            paramsSpec: undefined};
+            paramsSpec: undefined,
+            clfs: []};
 
         dataservice.getParamSpec()
             .then(function (response) {
                 $scope.model.paramSpec = response;
+                $scope.model.clfs.push(
+                    [Object.keys($scope.model.paramSpec)[0],
+                     []]);
             });
     
         function goReport() {
             $location.path('/report');
+        }
+
+        //http://stackoverflow.com/questions/25411291/angularjs-inline-check-if-an-array-check
+        $scope.isArray = angular.isArray;
+
+        $scope.add_clf = function() {
+            $scope.model.clfs.push(['', []]);
+        }
+
+        $scope.remove_clf = function() {
+            $scope.model.clfs.pop();
+        }
+
+        $scope.add_param = function(clf_idx) {
+            $scope.model.clfs[clf_idx][1].push(['', []]);
+        }
+
+        $scope.remove_param = function(clf_idx) {
+            $scope.model.clfs[clf_idx][1].pop();
+        }
+
+        $scope.add_param_setting = function(clf_idx, param_idx) {
+            $scope.model.clfs[clf_idx][1][param_idx][1].push(null);
+        }
+
+        $scope.remove_param_setting = function(clf_idx) {
+            $scope.model.clfs[clf_idx][1].pop();
         }
 
         $scope.submit = function() {
