@@ -57,7 +57,8 @@
             }
             $scope.model.uploadStatus = "working..."
             var otherInfo = {unit_id_feature : $scope.model.uid_column,
-                             label_feature : $scope.model.label_column}
+                             label_feature : $scope.model.label_column,
+                             clfs: JSON.stringify($scope.model.clfs)}
             dataservice.putCSV($scope.model.csvFile, otherInfo)
             .then(function () {
                 $scope.model.uploadStatus = "Upload Complete"

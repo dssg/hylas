@@ -35,6 +35,7 @@ from diogenes.display import Report
 from diogenes.grid_search import Experiment
 from diogenes.grid_search.standard_clfs import DBG_std_clfs
 
+from parse_clfs import parse_clfs
 from config import SECRET_KEY, DATABASE_URI, SALT, REPORT_FORMAT
 
 app = Flask(__name__)
@@ -289,11 +290,11 @@ def register_exp(exp, uid_feature):
                         run.col_names, 
                         uid_feature)
 
-def run_csv(fin, uid_feature, label_feature):
+def run_csv(fin, uid_feature, label_feature, clfs=DBG_std_clfs):
     sa = open_csv_as_sa(fin)
     labels = sa[label_feature]
     M = remove_cols(sa, label_feature)
-    exp = Experiment(M, labels, clfs=DBG_std_clfs)
+    exp = Experiment(M, labels, clfs=clfs)
     register_exp(exp, uid_feature)
 
 @app.route('/upload_csv', methods=['POST'])
@@ -302,7 +303,8 @@ def upload_csv():
     fin = request.files['file'].stream
     uid_feature = request.values['otherInfo[unit_id_feature]']
     label_feature = request.values['otherInfo[label_feature]']
-    run_csv(fin, uid_feature, label_feature)
+    clfs = parse_clfs(request.values['otherInfo[clfs]'])
+    run_csv(fin, uid_feature, label_feature, clfs=clfs)
     # TODO return 201 with link to new resource
     return "OK"
 

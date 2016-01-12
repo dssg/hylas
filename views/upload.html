@@ -89,7 +89,8 @@
                           </select>
                         </div>
                         <div ng-if="model.paramSpec[clf[0]][param[0]] === 
-                            'Number'">
+                            'Integer' || 
+                            model.paramSpec[clf[0]][param[0]] === 'Float'">
                           <input type="text" 
                             ng-model="model.clfs[clf_idx][1][param_idx][1][param_setting_idx]">
                           </input>
