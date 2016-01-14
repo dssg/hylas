@@ -46,8 +46,8 @@
             $scope.model.clfs[clf_idx][1][param_idx][1].push(null);
         }
 
-        $scope.remove_param_setting = function(clf_idx) {
-            $scope.model.clfs[clf_idx][1].pop();
+        $scope.remove_param_setting = function(clf_idx, param_idx) {
+            $scope.model.clfs[clf_idx][1][param_idx][1].pop();
         }
 
         $scope.submit = function() {
