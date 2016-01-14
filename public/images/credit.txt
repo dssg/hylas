@@ -1,1 +1,2 @@
 Icons from: http://raphaeljs.com/icons/#search
+The font for the logo is Arizonia: http://www.fontsquirrel.com/fonts/arizonia
