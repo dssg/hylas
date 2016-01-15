@@ -40,22 +40,23 @@ In addition to uploading a CSV, you can also upload a pickled
 
 ### Reporting
 
-After you have uploaded some data, you should move on to the "Report" page.
+After you have uploaded some data, you can move on to the "Report" page. 
+This should happen automatically. You can also click on "Report" in the upper right.
 
 First, under the "Models" heading, click on the classifier that you are
 interested in studying. That will bring you to the "Model Performance" heading.
 
 ![Model performance screenshot](screenshots/model_report.png)
 
-The "Model Performance" tab will show you general metrics about how will the
+The "Model Performance" tab will show you general metrics about how well the
 classifier made predictions about your data. The "Top Units" tab tells you
-which units were most likely to be labeled as positive and what their three
+which units were most likely to be labeled as positive and what their
 most predictive features were. Click on one of these units to get more detail.
 
 ![Unit performance screenshot](screenshots/unit_report.png)
 
 On the top of the "Unit Performance" section are the values for the given unit
-for the three most important features. When you click on a feature, the 
+for the most important features. When you click on a feature, the 
 "Distributions" tab shows the distribution of this feature for positive and
 negative results in the data set, as well as the value for that feature for
 the unit that we selected. The "Similar" tab shows which units are most
