@@ -38,8 +38,12 @@ from diogenes.grid_search.standard_clfs import DBG_std_clfs
 from parse_clfs import parse_clfs
 from config import SECRET_KEY, DATABASE_URI, SALT, REPORT_FORMAT
 
+# SQL Alchemy/ User Configuration
+# ===============================
+
 app = Flask(__name__)
 
+# Because otherwise flask-sqlalchemy complains
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Setting up Flask-security
 app.config['SECRET_KEY'] = SECRET_KEY
@@ -50,7 +54,7 @@ app.config['SECURITY_POST_LOGOUT_VIEW'] = '/login'
 
 db = SQLAlchemy(app)
 
-# Define models
+# Define user models
 roles_users = db.Table('roles_users',
         db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
         db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
@@ -77,11 +81,20 @@ def create_user():
     db.create_all()
     db.session.commit()
 
-# Model maintanance
+# Diogenes Experiment/Model maintanance
+# =====================================
+# We keep track of the experiments run for each user
+# A "model" from here forward is a fitted classifier combined with the
+# data it was fit with. The "Report" page of the frontend displays
+# metrics about models. Diogenes collects all its data/fitted classifiers
+# into Experiment objects. The standard workflow is that we use Diogenes
+# to construct Experiments, then we convert the Experiments to models for the
+# frontend to display
 all_models = {}
 last_experiments = {}
 
 def get_models(user):
+    """Get models for a particular user"""
     try:
         return all_models[user]
     except KeyError:
@@ -90,6 +103,7 @@ def get_models(user):
         return ret
 
 def clear_models(user):
+    """Remove all models for this user"""
     get_models(user)[:] = []
 
 def register_model(
@@ -102,6 +116,7 @@ def register_model(
         labels_test, 
         feature_names, 
         uid_feature):
+    """Add models to a user"""
     models = get_models(user)
     # M_train, etc. are numpy array
     # feature names is names of colums
@@ -129,7 +144,37 @@ def register_model(
         'uid_idx': {uid: idx for idx, uid in 
             enumerate(M_test[:,col_idx[uid_feature]])}})
 
+def register_exp(exp, uid_feature):
+    """ Turn diogenes experiment into models """
+    exp.run()
+    last_experiments[current_user.id] = exp
+    clear_models(current_user.id)
+    for trial in exp.trials:
+        for subset in trial.runs:
+            for run in subset:
+                register_model(
+                        current_user.id,
+                        run.clf, 
+                        dt.now(),
+                        run.M[run.train_indices], 
+                        run.M[run.test_indices], 
+                        run.labels[run.train_indices], 
+                        run.labels[run.test_indices], 
+                        run.col_names, 
+                        uid_feature)
+
+def run_csv(fin, uid_feature, label_feature, clfs=DBG_std_clfs):
+    """ Turn a CSV into an Experiment then turn the Experiment into models"""
+
+    sa = open_csv_as_sa(fin)
+    labels = sa[label_feature]
+    M = remove_cols(sa, label_feature)
+    exp = Experiment(M, labels, clfs=clfs)
+    register_exp(exp, uid_feature)
+
 # Endpoints
+# ==========
+
 # TODO use tokens rather than login. Less of a security risk
 @app.route('/list_models', methods=['GET'])
 @login_required
@@ -237,6 +282,7 @@ def units():
 @app.route('/distribution', methods=['GET'])
 @login_required
 def distribution():
+    """ That is, distribution of positive and negative units for a feature"""
     models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -251,6 +297,7 @@ def distribution():
 @app.route('/similar', methods=['GET'])
 @login_required
 def similar():
+    """ Get units similar to provided unit """
     models = get_models(current_user.id)
     model_id = int(request.args.get('model_id', '0'))
     model = models[model_id]
@@ -272,30 +319,6 @@ def similar():
             zip(top_uids, top_scores)]
     return jsonify(data=ret)
 
-def register_exp(exp, uid_feature):
-    exp.run()
-    last_experiments[current_user.id] = exp
-    clear_models(current_user.id)
-    for trial in exp.trials:
-        for subset in trial.runs:
-            for run in subset:
-                register_model(
-                        current_user.id,
-                        run.clf, 
-                        dt.now(),
-                        run.M[run.train_indices], 
-                        run.M[run.test_indices], 
-                        run.labels[run.train_indices], 
-                        run.labels[run.test_indices], 
-                        run.col_names, 
-                        uid_feature)
-
-def run_csv(fin, uid_feature, label_feature, clfs=DBG_std_clfs):
-    sa = open_csv_as_sa(fin)
-    labels = sa[label_feature]
-    M = remove_cols(sa, label_feature)
-    exp = Experiment(M, labels, clfs=clfs)
-    register_exp(exp, uid_feature)
 
 @app.route('/upload_csv', methods=['POST'])
 @login_required
