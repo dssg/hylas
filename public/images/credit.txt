@@ -1,1 +1,2 @@
-Icons from: http://raphaeljs.com/icons/#search
+Icons are from Font Awesome: https://fortawesome.github.io/Font-Awesome/
+The font for the logo is Arizonia: http://www.fontsquirrel.com/fonts/arizonia
