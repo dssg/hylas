@@ -306,7 +306,7 @@ def upload_csv():
     clfs = parse_clfs(request.values['otherInfo[clfs]'])
     run_csv(fin, uid_feature, label_feature, clfs=clfs)
     # TODO return 201 with link to new resource
-    return "OK"
+    return "OK", 201
 
 @app.route('/upload_pkl', methods=['POST'])
 @login_required
@@ -316,7 +316,7 @@ def upload_pkl():
     exp = cPickle.load(fin)
     register_exp(exp, uid_feature)
     # TODO return 201 with link to new resource
-    return "OK"
+    return "OK", 201
 
 @app.route('/download_pdf', methods=['GET'])
 @login_required
@@ -399,7 +399,7 @@ def bower_path(path):
 def reset():
     with open('sample.csv') as fin:
         run_csv(fin, 'id', 'label')
-    return "OK"
+    return "OK", 201
 
 if __name__ == '__main__':
 
